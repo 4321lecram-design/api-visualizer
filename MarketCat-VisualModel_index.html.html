@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalogue de Produits - Visionneuse JSON</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js"></script>
+    <style>
+        .carousel-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 0.75rem;
+            background: #f3f4f6;
+        }
+
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .carousel-item {
+            min-width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .carousel-item img {
+            max-height: 400px;
+            object-fit: contain;
+            transition: opacity 0.3s ease-in;
+        }
+
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Effet d'apparition douce pour les images */
+        img {
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out;
+        }
+
+        img.loaded {
+            opacity: 1;
+        }
+
+        /* Style pour les images en erreur ou placeholder */
+        .img-error {
+            opacity: 1 !important;
+            filter: grayscale(1);
+        }
+
+        /* Markdown content styling */
+        .markdown-content {
+            line-height: 1.6;
+        }
+
+        .markdown-content h1,
+        .markdown-content h2,
+        .markdown-content h3,
+        .markdown-content h4,
+        .markdown-content h5,
+        .markdown-content h6 {
+            font-weight: 700;
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+        }
+
+        .markdown-content h1 { font-size: 2em; }
+        .markdown-content h2 { font-size: 1.5em; }
+        .markdown-content h3 { font-size: 1.25em; }
+
+        .markdown-content p {
+            margin-bottom: 1em;
+        }
+
+        .markdown-content ul,
+        .markdown-content ol {
+            margin-left: 1.5em;
+            margin-bottom: 1em;
+        }
+
+        .markdown-content ul { list-style-type: disc; }
+        .markdown-content ol { list-style-type: decimal; }
+
+        .markdown-content li {
+            margin-bottom: 0.5em;
+        }
+
+        .markdown-content strong { font-weight: 700; }
+        .markdown-content em { font-style: italic; }
+
+        .markdown-content code {
+            background-color: #f1f5f9;
+            padding: 0.2em 0.4em;
+            border-radius: 0.25rem;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        .markdown-content pre {
+            background-color: #f1f5f9;
+            padding: 1em;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            margin-bottom: 1em;
+        }
+
+        .markdown-content pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+
+        .markdown-content blockquote {
+            border-left: 4px solid #cbd5e1;
+            padding-left: 1em;
+            color: #64748b;
+            margin-bottom: 1em;
+        }
+
+        .markdown-content a {
+            color: #2563eb;
+            text-decoration: underline;
+        }
+
+        .markdown-content a:hover {
+            color: #1d4ed8;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 min-h-screen font-sans text-slate-900">
+
+    <header class="bg-white border-b sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <h1 class="text-2xl font-bold text-blue-800 flex items-center gap-2">
+                <i class="fas fa-tire"></i> Catalogue Pneumatiques
+            </h1>
+
+            <div class="flex flex-col sm:flex-row items-center gap-3 flex-1 max-w-2xl">
+                <!-- Search Box -->
+                <div class="relative flex-1 w-full">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                        <i class="fas fa-search"></i>
+                    </span>
+                    <input type="text" id="searchBox" placeholder="Rechercher marque ou modèle..."
+                        class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg leading-5 bg-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150">
+                </div>
+
+                <!-- File Upload -->
+                <div class="w-full sm:w-auto">
+                    <input type="file" id="fileInput" accept=".mktcat,.json" class="hidden">
+                    <button onclick="document.getElementById('fileInput').click()"
+                        class="w-full whitespace-nowrap px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2">
+                        <i class="fas fa-file-import"></i> Charger .mktcat
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Result Grid -->
+        <div id="resultsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div id="loadingState" class="col-span-full text-center py-20">
+                <i class="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
+                <p class="text-slate-500 text-lg">Chargement des données...</p>
+            </div>
+        </div>
+
+        <!-- No results message -->
+        <div id="noResults" class="hidden text-center py-20">
+            <i class="fas fa-search-minus text-5xl text-slate-300 mb-4"></i>
+            <p class="text-slate-500 text-lg">Aucun résultat ne correspond à votre recherche.</p>
+        </div>
+
+        <!-- Error message -->
+        <div id="errorState" class="hidden col-span-full text-center py-20">
+            <i class="fas fa-exclamation-circle text-5xl text-red-500 mb-4"></i>
+            <p class="text-slate-800 font-bold text-xl">Erreur de chargement</p>
+            <p id="errorDetails" class="text-slate-500 mt-2"></p>
+        </div>
+    </main>
+
+    <!-- Detail Modal -->
+    <div id="detailModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-sm p-4">
+        <div class="flex items-center justify-center min-h-screen">
+            <div
+                class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full relative overflow-hidden flex flex-col max-h-[90vh]">
+                <!-- Modal Header -->
+                <div class="p-4 border-b flex justify-between items-center bg-white sticky top-0 z-10">
+                    <div>
+                        <span id="modalBrand" class="text-sm font-bold uppercase tracking-widest text-blue-600"></span>
+                        <h2 id="modalTitle" class="text-2xl font-bold"></h2>
+                    </div>
+                    <button onclick="closeModal()"
+                        class="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-500 hover:text-slate-800">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="p-6 overflow-y-auto">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <div class="carousel-container group">
+                                <div id="carouselTrack" class="carousel-track"></div>
+                                <button onclick="moveCarousel(-1)"
+                                    class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-md transition-all opacity-0 group-hover:opacity-100">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button onclick="moveCarousel(1)"
+                                    class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-md transition-all opacity-0 group-hover:opacity-100">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                                <div id="carouselDots"
+                                    class="absolute bottom-4 left-0 right-0 flex justify-center gap-2"></div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div>
+                                <h3 class="text-lg font-semibold text-slate-800 mb-2">Point fort unique</h3>
+                                <div id="modalUSP" class="text-blue-700 italic font-medium text-lg leading-relaxed"></div>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-slate-800 mb-2">Description courte</h3>
+                                <div id="modalShortText" class="text-slate-600 leading-relaxed"></div>
+                            </div>
+                            <div id="longTextContainer">
+                                <h3 class="text-lg font-semibold text-slate-800 mb-2">Informations détaillées</h3>
+                                <div id="modalLongText" class="text-slate-600 leading-relaxed">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-10 pt-8 border-t">
+                        <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                            <i class="fas fa-award text-yellow-500"></i> Résultats de tests
+                        </h3>
+                        <div id="testLabelsContainer" class="grid grid-cols-1 gap-4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * CONFIGURATION
+         */
+        const JSON_URL = 'mktcat/mktcat_michelin_fr.json';
+
+        let catalogueData = null;
+        let items = [];
+        let currentCarouselIndex = 0;
+        let currentImagesCount = 0;
+
+        const searchBox = document.getElementById('searchBox');
+        const fileInput = document.getElementById('fileInput');
+        const resultsGrid = document.getElementById('resultsGrid');
+        const noResults = document.getElementById('noResults');
+        const loadingState = document.getElementById('loadingState');
+        const errorState = document.getElementById('errorState');
+        const errorDetails = document.getElementById('errorDetails');
+        const detailModal = document.getElementById('detailModal');
+
+        function formatMichelinUrl(url, height = 500) {
+            if (!url || typeof url !== 'string' || !url.includes('michelin.com')) return url;
+            let cleanUrl = url.trim();
+            let formattedUrl = cleanUrl.replace('/variation/', '/transform/');
+            formattedUrl = formattedUrl.replace('/original', '');
+            const separator = formattedUrl.includes('?') ? '&' : '?';
+            return `${formattedUrl}${separator}t=resize&height=${height}`;
+        }
+
+        function handleImgLoad(img) {
+            img.classList.add('loaded');
+        }
+
+        function handleImgError(img) {
+            img.src = 'https://url.de.m.mimecastprotect.com/s/8m3TCOgm39H07QrM6fEfQIGSNm-?domain=placehold.co';
+            img.classList.add('img-error');
+        }
+
+        function renderMarkdown(text) {
+            if (!text) return '';
+            const rawHtml = marked.parse(text);
+            return DOMPurify.sanitize(rawHtml);
+        }
+
+        async function init() {
+            searchBox.addEventListener('input', handleSearch);
+            fileInput.addEventListener('change', handleFileSelect);
+            await fetchData();
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            loadingState.classList.remove('hidden');
+            errorState.classList.add('hidden');
+            resultsGrid.innerHTML = '';
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    loadData(data);
+                } catch (err) {
+                    showError("Format de fichier invalide. Assurez-vous qu'il s'agit d'un fichier JSON/mktcat valide.");
+                }
+            };
+            reader.onerror = () => showError("Erreur lors de la lecture du fichier.");
+            reader.readAsText(file);
+        }
+
+        async function fetchData() {
+            try {
+                const response = await fetch(JSON_URL);
+                if (!response.ok) {
+                    throw new Error(`Erreur serveur : ${response.status} ${response.statusText}`);
+                }
+                const data = await response.json();
+                loadData(data);
+            } catch (error) {
+                console.error("Erreur Fetch:", error);
+                showError(error.message);
+            }
+        }
+
+        function showError(message) {
+            loadingState.classList.add('hidden');
+            errorState.classList.remove('hidden');
+            errorDetails.textContent = `Détails : ${message}`;
+        }
+
+        function loadData(data) {
+            errorState.classList.add('hidden');
+            loadingState.classList.add('hidden');
+            catalogueData = data;
+            items = (catalogueData.MktCatHeader && catalogueData.MktCatHeader.Items) ? catalogueData.MktCatHeader.Items : [];
+            renderList(items);
+        }
+
+        function handleSearch() {
+            if (!items.length) return;
+            const query = searchBox.value.toLowerCase().trim();
+            const filtered = items.filter(item =>
+                (item.Brand && item.Brand.toLowerCase().includes(query)) ||
+                (item.TreadDesign1 && item.TreadDesign1.toLowerCase().includes(query))
+            );
+            renderList(filtered);
+        }
+
+        function renderList(data) {
+            resultsGrid.innerHTML = '';
+            if (data.length === 0) {
+                noResults.classList.remove('hidden');
+                return;
+            }
+            noResults.classList.add('hidden');
+
+            data.forEach((item) => {
+                const frData = item.LanguageDependentData.find(d => d.LanguageCode === 'fr') || item.LanguageDependentData[0] || {};
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-xl shadow-sm hover:shadow-md border border-slate-200 overflow-hidden cursor-pointer transition-all duration-200 transform hover:-translate-y-1";
+                card.onclick = () => showDetail(item);
+
+                const rawImg = item.Image && item.Image.length > 0 ? item.Image[0].URI : null;
+                const mainImg = rawImg ? formatMichelinUrl(rawImg, 300) : 'https://url.de.m.mimecastprotect.com/s/s9qaCPjn3JiojVAP7f0hJIximru?domain=placehold.co';
+
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'p-5';
+                
+                card.innerHTML = `
+                    <div class="h-48 bg-slate-100 flex items-center justify-center p-4">
+                        <img src="${mainImg}" 
+                             alt="${item.TreadDesign1}" 
+                             loading="lazy"
+                             onload="handleImgLoad(this)"
+                             onerror="handleImgError(this)"
+                             class="max-h-full max-w-full object-contain">
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-xs font-bold px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full uppercase">${item.Brand || 'Marque'}</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-800">${item.TreadDesign1 || 'Modèle inconnu'}</h3>
+                        <div class="markdown-content text-slate-500 text-sm mt-2 line-clamp-3"></div>
+                        <div class="mt-4 flex items-center text-blue-600 font-semibold text-sm">
+                            Voir détails <i class="fas fa-arrow-right ml-2 text-xs"></i>
+                        </div>
+                    </div>
+                `;
+                
+                // Insert markdown content
+                const shortTextDiv = card.querySelector('.markdown-content');
+                if (shortTextDiv) {
+                    shortTextDiv.innerHTML = renderMarkdown(frData.ShortText || '');
+                }
+                
+                resultsGrid.appendChild(card);
+            });
+        }
+
+        function showDetail(item) {
+            const frData = item.LanguageDependentData.find(d => d.LanguageCode === 'fr') || item.LanguageDependentData[0] || {};
+
+            document.getElementById('modalBrand').textContent = item.Brand || 'Marque';
+            document.getElementById('modalTitle').textContent = item.TreadDesign1 || 'Modèle';
+            
+            // Render markdown for UniqueSellingPoint
+            const uspDiv = document.getElementById('modalUSP');
+            uspDiv.innerHTML = renderMarkdown(frData.UniqueSellingPoint || 'N/A');
+            uspDiv.classList.add('markdown-content');
+            
+            // Render markdown for ShortText
+            const shortTextDiv = document.getElementById('modalShortText');
+            shortTextDiv.innerHTML = renderMarkdown(frData.ShortText || '');
+            shortTextDiv.classList.add('markdown-content');
+
+            const longText = frData.LongText;
+            const longTextDiv = document.getElementById('modalLongText');
+            if (longText) {
+                longTextDiv.innerHTML = renderMarkdown(longText);
+                longTextDiv.classList.add('markdown-content');
+                document.getElementById('longTextContainer').classList.remove('hidden');
+            } else {
+                document.getElementById('longTextContainer').classList.add('hidden');
+            }
+
+            const track = document.getElementById('carouselTrack');
+            const dots = document.getElementById('carouselDots');
+            track.innerHTML = '';
+            dots.innerHTML = '';
+            currentCarouselIndex = 0;
+            currentImagesCount = item.Image ? item.Image.length : 0;
+
+            if (currentImagesCount > 0) {
+                item.Image.forEach((img, i) => {
+                    const formattedUri = formatMichelinUrl(img.URI, 600);
+                    const slide = document.createElement('div');
+                    slide.className = 'carousel-item';
+                    slide.innerHTML = `<img src="${formattedUri}" 
+                                            alt="Image ${i}" 
+                                            onload="handleImgLoad(this)"
+                                            onerror="handleImgError(this)">`;
+                    track.appendChild(slide);
+
+                    const dot = document.createElement('button');
+                    dot.className = `w-2 h-2 rounded-full transition-all ${i === 0 ? 'bg-blue-600 w-4' : 'bg-slate-300'}`;
+                    dot.onclick = () => goToSlide(i);
+                    dots.appendChild(dot);
+                });
+            } else {
+                track.innerHTML = `<div class="carousel-item"><img src="https://url.de.m.mimecastprotect.com/s/udoBCQko9LU32Z4Y5CMiLIG55im?domain=placehold.co'images" class="loaded"></div>`;
+            }
+
+            updateCarouselPosition();
+
+            const testsContainer = document.getElementById('testLabelsContainer');
+            testsContainer.innerHTML = '';
+            if (frData.TestLabels && frData.TestLabels.length > 0) {
+                frData.TestLabels.forEach(test => {
+                    const date = test.DateIssue ? new Date(test.DateIssue).toLocaleDateString('fr-FR', {
+                        year: 'numeric', month: 'long', day: 'numeric'
+                    }) : 'Date inconnue';
+
+                    const testCard = document.createElement('div');
+                    testCard.className = "bg-slate-50 border border-slate-200 rounded-lg p-4 flex flex-col md:flex-row md:items-center justify-between gap-4";
+                    testCard.innerHTML = `
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="bg-yellow-100 text-yellow-800 text-[10px] font-black px-2 py-0.5 rounded uppercase">Test Officiel</span>
+                                <span class="text-xs text-slate-400 font-medium">${date}</span>
+                            </div>
+                            <h4 class="font-bold text-slate-800 text-lg">${test.NameTestingInstance}</h4>
+                            <div class="markdown-content text-slate-500 italic text-sm mt-1"></div>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="bg-green-600 text-white px-4 py-2 rounded-full font-bold text-sm shadow-sm whitespace-nowrap">
+                                <i class="fas fa-check-circle mr-1"></i> ${test.TestResult}
+                            </span>
+                        </div>
+                    `;
+                    
+                    // Render markdown for TestResultQuotation
+                    const quotationDiv = testCard.querySelector('.markdown-content');
+                    if (quotationDiv && test.TestResultQuotation) {
+                        quotationDiv.innerHTML = '"' + renderMarkdown(test.TestResultQuotation) + '"';
+                    }
+                    
+                    testsContainer.appendChild(testCard);
+                });
+            } else {
+                testsContainer.innerHTML = '<p class="text-slate-400 italic">Aucun label de test disponible.</p>';
+            }
+
+            detailModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            detailModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function moveCarousel(dir) {
+            if (currentImagesCount === 0) return;
+            currentCarouselIndex = (currentCarouselIndex + dir + currentImagesCount) % currentImagesCount;
+            updateCarouselPosition();
+        }
+
+        function goToSlide(index) {
+            currentCarouselIndex = index;
+            updateCarouselPosition();
+        }
+
+        function updateCarouselPosition() {
+            const track = document.getElementById('carouselTrack');
+            if (track) track.style.transform = `translateX(-${currentCarouselIndex * 100}%)`;
+
+            const dots = document.getElementById('carouselDots').children;
+            Array.from(dots).forEach((dot, i) => {
+                if (i === currentCarouselIndex) {
+                    dot.classList.add('bg-blue-600', 'w-4');
+                    dot.classList.remove('bg-slate-300');
+                } else {
+                    dot.classList.remove('bg-blue-600', 'w-4');
+                    dot.classList.add('bg-slate-300');
+                }
+            });
+        }
+
+        detailModal.addEventListener('click', (e) => {
+            if (e.target === detailModal) closeModal();
+        });
+
+        window.onload = init;
+    </script>
+</body>
+
+</html>
