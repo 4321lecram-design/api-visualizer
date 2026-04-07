@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catalogue de Produits - Visionneuse JSON</title>
+    <title>Marketing Catalogue</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
@@ -42,7 +42,6 @@
             overflow: hidden;
         }
 
-        /* Effet d'apparition douce pour les images */
         img {
             opacity: 0;
             transition: opacity 0.4s ease-in-out;
@@ -52,7 +51,6 @@
             opacity: 1;
         }
 
-        /* Style pour les images en erreur ou placeholder */
         .img-error {
             opacity: 1 !important;
             filter: grayscale(1);
@@ -74,9 +72,17 @@
             margin-bottom: 0.5em;
         }
 
-        .markdown-content h1 { font-size: 2em; }
-        .markdown-content h2 { font-size: 1.5em; }
-        .markdown-content h3 { font-size: 1.25em; }
+        .markdown-content h1 {
+            font-size: 2em;
+        }
+
+        .markdown-content h2 {
+            font-size: 1.5em;
+        }
+
+        .markdown-content h3 {
+            font-size: 1.25em;
+        }
 
         .markdown-content p {
             margin-bottom: 1em;
@@ -88,15 +94,25 @@
             margin-bottom: 1em;
         }
 
-        .markdown-content ul { list-style-type: disc; }
-        .markdown-content ol { list-style-type: decimal; }
+        .markdown-content ul {
+            list-style-type: disc;
+        }
+
+        .markdown-content ol {
+            list-style-type: decimal;
+        }
 
         .markdown-content li {
             margin-bottom: 0.5em;
         }
 
-        .markdown-content strong { font-weight: 700; }
-        .markdown-content em { font-style: italic; }
+        .markdown-content strong {
+            font-weight: 700;
+        }
+
+        .markdown-content em {
+            font-style: italic;
+        }
 
         .markdown-content code {
             background-color: #f1f5f9;
@@ -134,36 +150,82 @@
         .markdown-content a:hover {
             color: #1d4ed8;
         }
+
+        /* Brand panel styles */
+        .brand-item {
+            position: relative;
+        }
+
+        .brand-popover {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            z-index: 100;
+            min-width: 20rem;
+            max-width: 22rem;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        /* keep brand logo images visible */
+        .brand-logo-img {
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .brand-logo-img.loaded {
+            opacity: 1;
+        }
     </style>
 </head>
 
 <body class="bg-slate-50 min-h-screen font-sans text-slate-900">
 
     <header class="bg-white border-b sticky top-0 z-30 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <h1 class="text-2xl font-bold text-blue-800 flex items-center gap-2">
-                <i class="fas fa-tire"></i> Catalogue Pneumatiques
-            </h1>
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col gap-3">
 
-            <div class="flex flex-col sm:flex-row items-center gap-3 flex-1 max-w-2xl">
-                <!-- Search Box -->
-                <div class="relative flex-1 w-full">
-                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
-                        <i class="fas fa-search"></i>
-                    </span>
-                    <input type="text" id="searchBox" placeholder="Rechercher marque ou modèle..."
-                        class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg leading-5 bg-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150">
+            <!-- Top row: title block + controls -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+
+                <!-- Yellow title block -->
+                <div class="bg-yellow-400 px-4 py-2 rounded-lg inline-block">
+                    <h1 class="text-2xl font-black text-black tracking-widest uppercase leading-tight" data-i18n="pageTitle">
+                        MARKETING CATALOGUE
+                    </h1>
                 </div>
 
-                <!-- File Upload -->
-                <div class="w-full sm:w-auto">
-                    <input type="file" id="fileInput" accept=".mktcat,.json" class="hidden">
-                    <button onclick="document.getElementById('fileInput').click()"
-                        class="w-full whitespace-nowrap px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2">
-                        <i class="fas fa-file-import"></i> Charger .mktcat
-                    </button>
+                <!-- Search + Upload -->
+                <div class="flex flex-col sm:flex-row items-center gap-3 flex-1 max-w-2xl">
+                    <div class="relative flex-1 w-full">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" id="searchBox" placeholder="Rechercher une gamme"
+                            data-i18n-placeholder="searchPlaceholder"
+                            class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg leading-5 bg-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150">
+                    </div>
+                    <div class="w-full sm:w-auto flex flex-col sm:flex-row gap-2">
+                        <input type="file" id="fileInput" accept=".mktcat,.json" class="hidden">
+                        <button onclick="document.getElementById('fileInput').click()"
+                            class="w-full whitespace-nowrap px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2">
+                            <i class="fas fa-file-import"></i> <span data-i18n="loadJsonBtn">Intégration fichier JSON</span>
+                        </button>
+                        <button onclick="openApiModal()"
+                            class="w-full whitespace-nowrap px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2">
+                            <i class="fas fa-cloud-download-alt"></i> <span data-i18n="fetchFromApiBtn">Charger via API</span>
+                        </button>
+                    </div>
                 </div>
             </div>
+
+            <!-- Brand panel (hidden until data is loaded) -->
+            <div id="brandPanel" class="hidden border-t pt-3">
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2" data-i18n="selectBrandHeading">
+                    Sélectionner une Marque
+                </p>
+                <div id="brandList" class="flex flex-wrap gap-2"></div>
+            </div>
+
         </div>
     </header>
 
@@ -172,20 +234,20 @@
         <div id="resultsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <div id="loadingState" class="col-span-full text-center py-20">
                 <i class="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
-                <p class="text-slate-500 text-lg">Chargement des données...</p>
+                <p class="text-slate-500 text-lg" data-i18n="loadingText">Chargement des données...</p>
             </div>
         </div>
 
         <!-- No results message -->
         <div id="noResults" class="hidden text-center py-20">
             <i class="fas fa-search-minus text-5xl text-slate-300 mb-4"></i>
-            <p class="text-slate-500 text-lg">Aucun résultat ne correspond à votre recherche.</p>
+            <p class="text-slate-500 text-lg" data-i18n="noResults">Aucun résultat ne correspond à votre recherche.</p>
         </div>
 
         <!-- Error message -->
         <div id="errorState" class="hidden col-span-full text-center py-20">
             <i class="fas fa-exclamation-circle text-5xl text-red-500 mb-4"></i>
-            <p class="text-slate-800 font-bold text-xl">Erreur de chargement</p>
+            <p class="text-slate-800 font-bold text-xl" data-i18n="errorTitle">Erreur de chargement</p>
             <p id="errorDetails" class="text-slate-500 mt-2"></p>
         </div>
     </main>
@@ -193,12 +255,11 @@
     <!-- Detail Modal -->
     <div id="detailModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-sm p-4">
         <div class="flex items-center justify-center min-h-screen">
-            <div
-                class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full relative overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full relative overflow-hidden flex flex-col max-h-[90vh]">
                 <!-- Modal Header -->
                 <div class="p-4 border-b flex justify-between items-center bg-white sticky top-0 z-10">
                     <div>
-                        <span id="modalBrand" class="text-sm font-bold uppercase tracking-widest text-blue-600"></span>
+                        <div id="modalBrand" class="mb-1"></div>
                         <h2 id="modalTitle" class="text-2xl font-bold"></h2>
                     </div>
                     <button onclick="closeModal()"
@@ -221,31 +282,38 @@
                                     class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-md transition-all opacity-0 group-hover:opacity-100">
                                     <i class="fas fa-chevron-right"></i>
                                 </button>
-                                <div id="carouselDots"
-                                    class="absolute bottom-4 left-0 right-0 flex justify-center gap-2"></div>
+                                <div id="carouselDots" class="absolute bottom-4 left-0 right-0 flex justify-center gap-2"></div>
                             </div>
                         </div>
 
                         <div class="space-y-6">
                             <div>
-                                <h3 class="text-lg font-semibold text-slate-800 mb-2">Point fort unique</h3>
+                                <h3 class="text-lg font-semibold text-slate-800 mb-2" data-i18n="modalUSPLabel">Point fort unique</h3>
                                 <div id="modalUSP" class="text-blue-700 italic font-medium text-lg leading-relaxed"></div>
                             </div>
                             <div>
-                                <h3 class="text-lg font-semibold text-slate-800 mb-2">Description courte</h3>
+                                <h3 class="text-lg font-semibold text-slate-800 mb-2" data-i18n="modalShortTextLabel">Description courte</h3>
                                 <div id="modalShortText" class="text-slate-600 leading-relaxed"></div>
                             </div>
                             <div id="longTextContainer">
-                                <h3 class="text-lg font-semibold text-slate-800 mb-2">Informations détaillées</h3>
+                                <h3 class="text-lg font-semibold text-slate-800 mb-2" data-i18n="modalLongTextLabel">Informations détaillées</h3>
                                 <div id="modalLongText" class="text-slate-600 leading-relaxed">
                                 </div>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Feature 8: Technology section (hidden when no data) -->
+                    <div id="technologySection" class="hidden mt-10 pt-8 border-t">
+                        <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                            <i class="fas fa-microchip text-blue-500"></i> <span data-i18n="technologyLabel">Technologie</span>
+                        </h3>
+                        <div id="technologyContainer" class="grid grid-cols-1 gap-4"></div>
+                    </div>
+
                     <div class="mt-10 pt-8 border-t">
                         <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-                            <i class="fas fa-award text-yellow-500"></i> Résultats de tests
+                            <i class="fas fa-award text-yellow-500"></i> <span data-i18n="testResultsLabel">Résultats de tests</span>
                         </h3>
                         <div id="testLabelsContainer" class="grid grid-cols-1 gap-4"></div>
                     </div>
@@ -254,16 +322,1484 @@
         </div>
     </div>
 
+    <!-- API Fetch Modal -->
+    <div id="apiModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm p-4">
+        <div class="flex items-center justify-center min-h-screen">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative">
+                <!-- Close button -->
+                <button onclick="closeApiModal()"
+                    class="absolute top-4 right-4 p-2 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-700 transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+
+                <!-- Title -->
+                <h2 class="text-xl font-bold text-slate-800 mb-5 flex items-center gap-2 pr-8">
+                    <i class="fas fa-cloud-download-alt text-emerald-600"></i>
+                    <span data-i18n="apiModalTitle">Charger les catalogues depuis l'API</span>
+                </h2>
+
+                <div class="space-y-4">
+                    <!-- Language -->
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">
+                            <span data-i18n="languageLabel">Langue</span> <span class="text-red-500">*</span>
+                        </label>
+                        <select id="apiLanguageSelect" onchange="updateApiCountryOptions()"
+                            class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none bg-white">
+                        </select>
+                    </div>
+
+                    <!-- Country -->
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">
+                            <span data-i18n="countryLabel">Pays</span> <span class="text-red-500">*</span>
+                        </label>
+                        <select id="apiCountrySelect"
+                            class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none bg-white">
+                        </select>
+                    </div>
+
+                    <!-- Tread Design (optional) -->
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">
+                            <span data-i18n="optionalTreadDesign">Design de pneu (optionnel)</span>
+                        </label>
+                        <input type="text" id="apiTreadDesign"
+                            class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+                            placeholder="">
+                    </div>
+
+                    <!-- Brand (optional) -->
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">
+                            <span data-i18n="optionalBrand">Marque (optionnel)</span>
+                        </label>
+                        <input type="text" id="apiBrandInput"
+                            class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+                            placeholder="">
+                    </div>
+                </div>
+
+                <!-- Credentials separator -->
+                <div class="border-t border-slate-200 mt-5 pt-4 space-y-4">
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wide -mb-1">Authentication</p>
+
+                    <!-- API Key -->
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">
+                            API Key <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="apiKeyInput"
+                            class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none font-mono"
+                            placeholder="apikey">
+                    </div>
+
+                    <!-- Username -->
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">
+                            Username <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="apiUsernameInput"
+                            class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+                            placeholder="username">
+                    </div>
+
+                    <!-- Password -->
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">
+                            Password <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <input type="password" id="apiPasswordInput"
+                                class="w-full border border-slate-300 rounded-lg px-3 py-2 pr-10 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none font-mono"
+                                placeholder="password">
+                            <button type="button" onclick="togglePasswordVisibility()"
+                                class="absolute inset-y-0 right-2 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
+                                tabindex="-1">
+                                <i id="passwordEyeIcon" class="fas fa-eye text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action buttons -->
+                <div class="mt-6 flex gap-3 justify-end">
+                    <button onclick="closeApiModal()"
+                        class="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-100 transition-colors font-medium text-sm">
+                        <span data-i18n="cancelBtnLabel">Annuler</span>
+                    </button>
+                    <button onclick="fetchFromApi()"
+                        class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors text-sm flex items-center gap-2">
+                        <i class="fas fa-cloud-download-alt"></i>
+                        <span data-i18n="fetchBtnLabel">Charger</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        /**
-         * CONFIGURATION
-         */
+        // ── API Configuration ──────────────────────────────────────────────────
+        const API_URL = 'https://api.michelin.com/mktcat/C1_2/mktcat'; // API base URL
+        // Credentials are entered in the API modal (API Key, Username, Password)
+
         const JSON_URL = 'mktcat/mktcat_michelin_fr.json';
 
         let catalogueData = null;
         let items = [];
+        let activeLanguage = 'fr';          // current UI language
+        let hiddenBrands = new Set();
+        let activeBrandPopover = null;
         let currentCarouselIndex = 0;
         let currentImagesCount = 0;
+        let pendingApiLanguage = null;       // set before loadData() when fetching from API
+        let pendingApiCountry  = null;       // set before loadData() when fetching from API
+        let lastApiModalState  = null;       // persists API modal selections across opens
+
+        // ── Valid language / country combinations ──────────────────────────────
+        const LOCALE_COMBINATIONS = [
+            { locale: 'ar-001',     language: 'ar', languageEN: 'Arabic',            country: '001', countryEN: 'Arabic (World)' },
+            { locale: 'ar-SA',      language: 'ar', languageEN: 'Arabic',            country: 'SA',  countryEN: 'Saudi Arabia' },
+            { locale: 'bg-BG',      language: 'bg', languageEN: 'Bulgarian',         country: 'BG',  countryEN: 'Bulgaria' },
+            { locale: 'bs-Latn-BA', language: 'bs', languageEN: 'Bosnian',           country: 'BA',  countryEN: 'Bosnia and Herzegovina' },
+            { locale: 'cs-CZ',      language: 'cs', languageEN: 'Czech',             country: 'CZ',  countryEN: 'Czechia' },
+            { locale: 'da-DK',      language: 'da', languageEN: 'Danish',            country: 'DK',  countryEN: 'Denmark' },
+            { locale: 'de-AT',      language: 'de', languageEN: 'German',            country: 'AT',  countryEN: 'Austria' },
+            { locale: 'de-CH',      language: 'de', languageEN: 'German',            country: 'CH',  countryEN: 'Switzerland' },
+            { locale: 'de-DE',      language: 'de', languageEN: 'German',            country: 'DE',  countryEN: 'Germany' },
+            { locale: 'el-GR',      language: 'el', languageEN: 'Greek',             country: 'GR',  countryEN: 'Greece' },
+            { locale: 'en-029',     language: 'en', languageEN: 'English',           country: '029', countryEN: 'Caribbean Countries' },
+            { locale: 'en-AU',      language: 'en', languageEN: 'English',           country: 'AU',  countryEN: 'Australia' },
+            { locale: 'en-CA',      language: 'en', languageEN: 'English',           country: 'CA',  countryEN: 'Canada' },
+            { locale: 'en-CM',      language: 'en', languageEN: 'English',           country: 'CM',  countryEN: 'Cameroon' },
+            { locale: 'en-CX',      language: 'en', languageEN: 'English',           country: 'CX',  countryEN: 'Christmas Island' },
+            { locale: 'en-GB',      language: 'en', languageEN: 'English',           country: 'GB',  countryEN: 'United Kingdom' },
+            { locale: 'en-HK',      language: 'en', languageEN: 'English',           country: 'HK',  countryEN: 'Hong Kong' },
+            { locale: 'en-IE',      language: 'en', languageEN: 'English',           country: 'IE',  countryEN: 'Ireland' },
+            { locale: 'en-IL',      language: 'en', languageEN: 'English',           country: 'IL',  countryEN: 'Israel' },
+            { locale: 'en-IN',      language: 'en', languageEN: 'English',           country: 'IN',  countryEN: 'India' },
+            { locale: 'en-KY',      language: 'en', languageEN: 'English',           country: 'KY',  countryEN: 'Cayman Islands' },
+            { locale: 'en-MT',      language: 'en', languageEN: 'English',           country: 'MT',  countryEN: 'Malta' },
+            { locale: 'en-MY',      language: 'en', languageEN: 'English',           country: 'MY',  countryEN: 'Malaysia' },
+            { locale: 'en-NG',      language: 'en', languageEN: 'English',           country: 'NG',  countryEN: 'Nigeria' },
+            { locale: 'en-NZ',      language: 'en', languageEN: 'English',           country: 'NZ',  countryEN: 'New Zealand' },
+            { locale: 'en-PH',      language: 'en', languageEN: 'English',           country: 'PH',  countryEN: 'Philippines' },
+            { locale: 'en-SG',      language: 'en', languageEN: 'English',           country: 'SG',  countryEN: 'Singapore' },
+            { locale: 'en-US',      language: 'en', languageEN: 'English',           country: 'US',  countryEN: 'United States' },
+            { locale: 'en-ZA',      language: 'en', languageEN: 'English',           country: 'ZA',  countryEN: 'South Africa' },
+            { locale: 'es-AR',      language: 'es', languageEN: 'Spanish',           country: 'AR',  countryEN: 'Argentina' },
+            { locale: 'es-BO',      language: 'es', languageEN: 'Spanish',           country: 'BO',  countryEN: 'Bolivia' },
+            { locale: 'es-CL',      language: 'es', languageEN: 'Spanish',           country: 'CL',  countryEN: 'Chile' },
+            { locale: 'es-CO',      language: 'es', languageEN: 'Spanish',           country: 'CO',  countryEN: 'Colombia' },
+            { locale: 'es-EC',      language: 'es', languageEN: 'Spanish',           country: 'EC',  countryEN: 'Ecuador' },
+            { locale: 'es-ES',      language: 'es', languageEN: 'Spanish',           country: 'ES',  countryEN: 'Spain' },
+            { locale: 'es-MX',      language: 'es', languageEN: 'Spanish',           country: 'MX',  countryEN: 'Mexico' },
+            { locale: 'es-PE',      language: 'es', languageEN: 'Spanish',           country: 'PE',  countryEN: 'Peru' },
+            { locale: 'es-PR',      language: 'es', languageEN: 'Spanish',           country: 'PR',  countryEN: 'Puerto Rico' },
+            { locale: 'es-PY',      language: 'es', languageEN: 'Spanish',           country: 'PY',  countryEN: 'Paraguay' },
+            { locale: 'es-US',      language: 'es', languageEN: 'Spanish',           country: 'US',  countryEN: 'United States' },
+            { locale: 'es-UY',      language: 'es', languageEN: 'Spanish',           country: 'UY',  countryEN: 'Uruguay' },
+            { locale: 'es-VE',      language: 'es', languageEN: 'Spanish',           country: 'VE',  countryEN: 'Venezuela' },
+            { locale: 'et-EE',      language: 'et', languageEN: 'Estonian',          country: 'EE',  countryEN: 'Estonia' },
+            { locale: 'fi-FI',      language: 'fi', languageEN: 'Finnish',           country: 'FI',  countryEN: 'Finland' },
+            { locale: 'fr-BE',      language: 'fr', languageEN: 'French',            country: 'BE',  countryEN: 'Belgium' },
+            { locale: 'fr-CA',      language: 'fr', languageEN: 'French',            country: 'CA',  countryEN: 'Canada' },
+            { locale: 'fr-CH',      language: 'fr', languageEN: 'French',            country: 'CH',  countryEN: 'Switzerland' },
+            { locale: 'fr-CM',      language: 'fr', languageEN: 'French',            country: 'CM',  countryEN: 'Cameroon' },
+            { locale: 'fr-FR',      language: 'fr', languageEN: 'French',            country: 'FR',  countryEN: 'France' },
+            { locale: 'fr-LU',      language: 'fr', languageEN: 'French',            country: 'LU',  countryEN: 'Luxembourg' },
+            { locale: 'fr-SC',      language: 'fr', languageEN: 'French',            country: 'SC',  countryEN: 'Seychelles' },
+            { locale: 'he-IL',      language: 'he', languageEN: 'Hebrew',            country: 'IL',  countryEN: 'Israel' },
+            { locale: 'hr-HR',      language: 'hr', languageEN: 'Croatian',          country: 'HR',  countryEN: 'Croatia' },
+            { locale: 'hu-HU',      language: 'hu', languageEN: 'Hungarian',         country: 'HU',  countryEN: 'Hungary' },
+            { locale: 'id-ID',      language: 'id', languageEN: 'Indonesian',        country: 'ID',  countryEN: 'Indonesia' },
+            { locale: 'is-IS',      language: 'is', languageEN: 'Icelandic',         country: 'IS',  countryEN: 'Iceland' },
+            { locale: 'it-CH',      language: 'it', languageEN: 'Italian',           country: 'CH',  countryEN: 'Switzerland' },
+            { locale: 'it-IT',      language: 'it', languageEN: 'Italian',           country: 'IT',  countryEN: 'Italy' },
+            { locale: 'ja-JP',      language: 'ja', languageEN: 'Japanese',          country: 'JP',  countryEN: 'Japan' },
+            { locale: 'kk-KZ',      language: 'kk', languageEN: 'Kazakh',            country: 'KZ',  countryEN: 'Kazakhstan' },
+            { locale: 'ko-KR',      language: 'ko', languageEN: 'Korean',            country: 'KR',  countryEN: 'Korea (Republic of)' },
+            { locale: 'lt-LT',      language: 'lt', languageEN: 'Lithuanian',        country: 'LT',  countryEN: 'Lithuania' },
+            { locale: 'lv-LV',      language: 'lv', languageEN: 'Latvian',           country: 'LV',  countryEN: 'Latvia' },
+            { locale: 'mk-MK',      language: 'mk', languageEN: 'Macedonian',        country: 'MK',  countryEN: 'North Macedonia' },
+            { locale: 'nb-NO',      language: 'nb', languageEN: 'Norwegian Bokmål',  country: 'NO',  countryEN: 'Norway' },
+            { locale: 'nl-BE',      language: 'nl', languageEN: 'Dutch',             country: 'BE',  countryEN: 'Belgium' },
+            { locale: 'nl-NL',      language: 'nl', languageEN: 'Dutch',             country: 'NL',  countryEN: 'Netherlands' },
+            { locale: 'pl-PL',      language: 'pl', languageEN: 'Polish',            country: 'PL',  countryEN: 'Poland' },
+            { locale: 'pt-BR',      language: 'pt', languageEN: 'Portuguese',        country: 'BR',  countryEN: 'Brazil' },
+            { locale: 'pt-PT',      language: 'pt', languageEN: 'Portuguese',        country: 'PT',  countryEN: 'Portugal' },
+            { locale: 'ro-MD',      language: 'ro', languageEN: 'Romanian',          country: 'MD',  countryEN: 'Moldova' },
+            { locale: 'ro-RO',      language: 'ro', languageEN: 'Romanian',          country: 'RO',  countryEN: 'Romania' },
+            { locale: 'ru-RU',      language: 'ru', languageEN: 'Russian',           country: 'RU',  countryEN: 'Russian Federation' },
+            { locale: 'sk-SK',      language: 'sk', languageEN: 'Slovak',            country: 'SK',  countryEN: 'Slovakia' },
+            { locale: 'sl-SI',      language: 'sl', languageEN: 'Slovene',           country: 'SI',  countryEN: 'Slovenia' },
+            { locale: 'sr-Cyrl-RS', language: 'sr', languageEN: 'Serbian',           country: 'RS',  countryEN: 'Serbia' },
+            { locale: 'sv-SE',      language: 'sv', languageEN: 'Swedish',           country: 'SE',  countryEN: 'Sweden' },
+            { locale: 'th-TH',      language: 'th', languageEN: 'Thai',              country: 'TH',  countryEN: 'Thailand' },
+            { locale: 'tr-TR',      language: 'tr', languageEN: 'Turkish',           country: 'TR',  countryEN: 'Türkiye' },
+            { locale: 'uk-UA',      language: 'uk', languageEN: 'Ukrainian',         country: 'UA',  countryEN: 'Ukraine' },
+            { locale: 'vi-VN',      language: 'vi', languageEN: 'Vietnamese',        country: 'VN',  countryEN: 'Viet Nam' },
+            { locale: 'zh-CN',      language: 'zh', languageEN: 'Chinese',           country: 'CN',  countryEN: 'China' },
+            { locale: 'zh-HK',      language: 'zh', languageEN: 'Chinese',           country: 'HK',  countryEN: 'Hong Kong' },
+            { locale: 'zh-MO',      language: 'zh', languageEN: 'Chinese',           country: 'MO',  countryEN: 'Macao' },
+            { locale: 'zh-TW',      language: 'zh', languageEN: 'Chinese',           country: 'TW',  countryEN: 'Taiwan' },
+        ];
+
+        // ── i18n dictionary ────────────────────────────────────────────────────
+        const i18n = {
+            // ── French ──────────────────────────────────────────────────────
+            fr: {
+                pageTitle:          'Marketing Catalogue',
+                countryLabel:       'Pays',
+                selectBrandHeading: 'Sélectionner une Marque',
+                brandDetailsBtn:    'Détails',
+                searchPlaceholder:  'Rechercher une gamme',
+                loadJsonBtn:        'Intégration fichier JSON',
+                noResults:          'Aucun résultat ne correspond à votre recherche.',
+                loadingText:        'Chargement des données...',
+                seeDetails:         'Voir détails',
+                modalUSPLabel:      'Point fort unique',
+                modalShortTextLabel:'Description courte',
+                modalLongTextLabel: 'Informations détaillées',
+                technologyLabel:    'Technologie',
+                testResultsLabel:   'Résultats de tests',
+                testOfficielLabel:  'Test Officiel',
+                unknownDate:        'Date inconnue',
+                noTestLabel:        'Aucun label de test disponible.',
+                errorTitle:         'Erreur de chargement',
+                invalidFileError:   "Format de fichier invalide. Assurez-vous qu'il s'agit d'un fichier JSON/mktcat valide.",
+                fileReadError:      'Erreur lors de la lecture du fichier.',
+                fetchFromApiBtn:    'Charger via API',
+                apiModalTitle:      "Charger les catalogues depuis l'API",
+                languageLabel:      'Langue',
+                optionalTreadDesign:'Design de pneu (optionnel)',
+                optionalBrand:      'Marque (optionnel)',
+                fetchBtnLabel:      'Charger',
+                cancelBtnLabel:     'Annuler',
+                fetchingApiText:    "Chargement depuis l'API...",
+            },
+            // ── Arabic ──────────────────────────────────────────────────────
+            ar: {
+                pageTitle:          'كتالوج التسويق',
+                countryLabel:       'البلد',
+                selectBrandHeading: 'اختر علامة تجارية',
+                brandDetailsBtn:    'تفاصيل',
+                searchPlaceholder:  'البحث عن سلسلة',
+                loadJsonBtn:        'تحميل ملف JSON',
+                noResults:          'لا توجد نتائج تطابق بحثك.',
+                loadingText:        'جارٍ تحميل البيانات...',
+                seeDetails:         'عرض التفاصيل',
+                modalUSPLabel:      'نقطة البيع الفريدة',
+                modalShortTextLabel:'وصف مختصر',
+                modalLongTextLabel: 'معلومات مفصلة',
+                technologyLabel:    'التكنولوجيا',
+                testResultsLabel:   'نتائج الاختبار',
+                testOfficielLabel:  'اختبار رسمي',
+                unknownDate:        'تاريخ غير معروف',
+                noTestLabel:        'لا توجد ملصقات اختبار متاحة.',
+                errorTitle:         'خطأ في التحميل',
+                invalidFileError:   'تنسيق ملف غير صالح. تأكد من أنه ملف JSON/mktcat صالح.',
+                fileReadError:      'خطأ أثناء قراءة الملف.',
+                fetchFromApiBtn:    'تحميل من API',
+                apiModalTitle:      'تحميل الكتالوجات من API',
+                languageLabel:      'اللغة',
+                optionalTreadDesign:'تصميم المداس (اختياري)',
+                optionalBrand:      'العلامة التجارية (اختياري)',
+                fetchBtnLabel:      'تحميل',
+                cancelBtnLabel:     'إلغاء',
+                fetchingApiText:    'جارٍ التحميل من API...',
+            },
+            // ── Bulgarian ────────────────────────────────────────────────────
+            bg: {
+                pageTitle:          'Маркетингов каталог',
+                countryLabel:       'Държава',
+                selectBrandHeading: 'Изберете марка',
+                brandDetailsBtn:    'Детайли',
+                searchPlaceholder:  'Търсене на гама',
+                loadJsonBtn:        'Зареждане на JSON файл',
+                noResults:          'Няма резултати, отговарящи на вашето търсене.',
+                loadingText:        'Зареждане на данни...',
+                seeDetails:         'Вижте детайли',
+                modalUSPLabel:      'Уникална характеристика',
+                modalShortTextLabel:'Кратко описание',
+                modalLongTextLabel: 'Подробна информация',
+                technologyLabel:    'Технология',
+                testResultsLabel:   'Резултати от тестове',
+                testOfficielLabel:  'Официален тест',
+                unknownDate:        'Неизвестна дата',
+                noTestLabel:        'Няма налични тестови етикети.',
+                errorTitle:         'Грешка при зареждане',
+                invalidFileError:   'Невалиден формат на файл. Уверете се, че е валиден JSON/mktcat файл.',
+                fileReadError:      'Грешка при четене на файла.',
+                fetchFromApiBtn:    'Зареди от API',
+                apiModalTitle:      'Зареждане на каталози от API',
+                languageLabel:      'Език',
+                optionalTreadDesign:'Дизайн на протектора (по избор)',
+                optionalBrand:      'Марка (по избор)',
+                fetchBtnLabel:      'Зареди',
+                cancelBtnLabel:     'Отказ',
+                fetchingApiText:    'Зареждане от API...',
+            },
+            // ── Bosnian ──────────────────────────────────────────────────────
+            bs: {
+                pageTitle:          'Marketinški katalog',
+                countryLabel:       'Zemlja',
+                selectBrandHeading: 'Odaberite marku',
+                brandDetailsBtn:    'Detalji',
+                searchPlaceholder:  'Pretraži asortiman',
+                loadJsonBtn:        'Učitaj JSON datoteku',
+                noResults:          'Nema rezultata koji odgovaraju vašoj pretrazi.',
+                loadingText:        'Učitavanje podataka...',
+                seeDetails:         'Pogledaj detalje',
+                modalUSPLabel:      'Jedinstvena prodajna točka',
+                modalShortTextLabel:'Kratki opis',
+                modalLongTextLabel: 'Detaljne informacije',
+                technologyLabel:    'Tehnologija',
+                testResultsLabel:   'Rezultati testova',
+                testOfficielLabel:  'Službeni test',
+                unknownDate:        'Nepoznat datum',
+                noTestLabel:        'Nema dostupnih oznaka testova.',
+                errorTitle:         'Greška pri učitavanju',
+                invalidFileError:   'Neispravan format datoteke. Provjerite je li to valjana JSON/mktcat datoteka.',
+                fileReadError:      'Greška pri čitanju datoteke.',
+                fetchFromApiBtn:    'Učitaj od API',
+                apiModalTitle:      'Učitavanje kataloga od API',
+                languageLabel:      'Jezik',
+                optionalTreadDesign:'Dizajn gaznog sloja (opciono)',
+                optionalBrand:      'Marka (opciono)',
+                fetchBtnLabel:      'Učitaj',
+                cancelBtnLabel:     'Otkaži',
+                fetchingApiText:    'Učitavanje od API...',
+            },
+            // ── Czech ────────────────────────────────────────────────────────
+            cs: {
+                pageTitle:          'Marketingový katalog',
+                countryLabel:       'Země',
+                selectBrandHeading: 'Vyberte značku',
+                brandDetailsBtn:    'Detaily',
+                searchPlaceholder:  'Vyhledat řadu',
+                loadJsonBtn:        'Načíst soubor JSON',
+                noResults:          'Žádné výsledky neodpovídají vašemu hledání.',
+                loadingText:        'Načítání dat...',
+                seeDetails:         'Zobrazit detaily',
+                modalUSPLabel:      'Unikátní prodejní bod',
+                modalShortTextLabel:'Krátký popis',
+                modalLongTextLabel: 'Podrobné informace',
+                technologyLabel:    'Technologie',
+                testResultsLabel:   'Výsledky testů',
+                testOfficielLabel:  'Oficiální test',
+                unknownDate:        'Neznámé datum',
+                noTestLabel:        'Žádné testovací štítky nejsou k dispozici.',
+                errorTitle:         'Chyba při načítání',
+                invalidFileError:   'Neplatný formát souboru. Ujistěte se, že se jedná o platný soubor JSON/mktcat.',
+                fileReadError:      'Chyba při čtení souboru.',
+                fetchFromApiBtn:    'Načíst z API',
+                apiModalTitle:      'Načítání katalogů z API',
+                languageLabel:      'Jazyk',
+                optionalTreadDesign:'Vzor dezénu (voliteľné)',
+                optionalBrand:      'Značka (voliteľné)',
+                fetchBtnLabel:      'Načíst',
+                cancelBtnLabel:     'Zrušit',
+                fetchingApiText:    'Načítání z API...',
+            },
+            // ── Danish ───────────────────────────────────────────────────────
+            da: {
+                pageTitle:          'Markedsføringskatalog',
+                countryLabel:       'Land',
+                selectBrandHeading: 'Vælg et mærke',
+                brandDetailsBtn:    'Detaljer',
+                searchPlaceholder:  'Søg efter en serie',
+                loadJsonBtn:        'Indlæs JSON-fil',
+                noResults:          'Ingen resultater svarer til din søgning.',
+                loadingText:        'Indlæser data...',
+                seeDetails:         'Se detaljer',
+                modalUSPLabel:      'Unikt salgsargument',
+                modalShortTextLabel:'Kort beskrivelse',
+                modalLongTextLabel: 'Detaljeret information',
+                technologyLabel:    'Teknologi',
+                testResultsLabel:   'Testresultater',
+                testOfficielLabel:  'Officiel test',
+                unknownDate:        'Ukendt dato',
+                noTestLabel:        'Ingen testetiket tilgængelig.',
+                errorTitle:         'Fejl ved indlæsning',
+                invalidFileError:   'Ugyldigt filformat. Sørg for, at det er en gyldig JSON/mktcat-fil.',
+                fileReadError:      'Fejl ved læsning af filen.',
+                fetchFromApiBtn:    'Hent fra API',
+                apiModalTitle:      'Hent kataloger fra API',
+                languageLabel:      'Sprog',
+                optionalTreadDesign:'Dækmønster (valgfrit)',
+                optionalBrand:      'Mærke (valgfrit)',
+                fetchBtnLabel:      'Hent',
+                cancelBtnLabel:     'Annuller',
+                fetchingApiText:    'Henter fra API...',
+            },
+            // ── German ───────────────────────────────────────────────────────
+            de: {
+                pageTitle:          'Marketing Katalog',
+                countryLabel:       'Land',
+                selectBrandHeading: 'Marke auswählen',
+                brandDetailsBtn:    'Details',
+                searchPlaceholder:  'Reihe suchen',
+                loadJsonBtn:        'JSON-Datei integrieren',
+                noResults:          'Keine Ergebnisse entsprechen Ihrer Suche.',
+                loadingText:        'Daten werden geladen...',
+                seeDetails:         'Details anzeigen',
+                modalUSPLabel:      'Alleinstellungsmerkmal',
+                modalShortTextLabel:'Kurzbeschreibung',
+                modalLongTextLabel: 'Detaillierte Informationen',
+                technologyLabel:    'Technologie',
+                testResultsLabel:   'Testergebnisse',
+                testOfficielLabel:  'Offizieller Test',
+                unknownDate:        'Unbekanntes Datum',
+                noTestLabel:        'Keine Testbezeichnungen verfügbar.',
+                errorTitle:         'Ladefehler',
+                invalidFileError:   'Ungültiges Dateiformat. Stellen Sie sicher, dass es sich um eine gültige JSON/mktcat-Datei handelt.',
+                fileReadError:      'Fehler beim Lesen der Datei.',
+                fetchFromApiBtn:    'Von API laden',
+                apiModalTitle:      'Kataloge von API laden',
+                languageLabel:      'Sprache',
+                optionalTreadDesign:'Profildesign (optional)',
+                optionalBrand:      'Marke (optional)',
+                fetchBtnLabel:      'Laden',
+                cancelBtnLabel:     'Abbrechen',
+                fetchingApiText:    'Lade von API...',
+            },
+            // ── Greek ────────────────────────────────────────────────────────
+            el: {
+                pageTitle:          'Κατάλογος Μάρκετινγκ',
+                countryLabel:       'Χώρα',
+                selectBrandHeading: 'Επιλέξτε μάρκα',
+                brandDetailsBtn:    'Λεπτομέρειες',
+                searchPlaceholder:  'Αναζήτηση σειράς',
+                loadJsonBtn:        'Φόρτωση αρχείου JSON',
+                noResults:          'Δεν βρέθηκαν αποτελέσματα για την αναζήτησή σας.',
+                loadingText:        'Φόρτωση δεδομένων...',
+                seeDetails:         'Προβολή λεπτομερειών',
+                modalUSPLabel:      'Μοναδικό σημείο πώλησης',
+                modalShortTextLabel:'Σύντομη περιγραφή',
+                modalLongTextLabel: 'Αναλυτικές πληροφορίες',
+                technologyLabel:    'Τεχνολογία',
+                testResultsLabel:   'Αποτελέσματα δοκιμών',
+                testOfficielLabel:  'Επίσημη δοκιμή',
+                unknownDate:        'Άγνωστη ημερομηνία',
+                noTestLabel:        'Δεν υπάρχουν διαθέσιμες ετικέτες δοκιμών.',
+                errorTitle:         'Σφάλμα φόρτωσης',
+                invalidFileError:   'Μη έγκυρη μορφή αρχείου. Βεβαιωθείτε ότι είναι έγκυρο αρχείο JSON/mktcat.',
+                fileReadError:      'Σφάλμα κατά την ανάγνωση του αρχείου.',
+                fetchFromApiBtn:    'Φόρτωση από API',
+                apiModalTitle:      'Φόρτωση καταλόγων από API',
+                languageLabel:      'Γλώσσα',
+                optionalTreadDesign:'Σχέδιο πέλματος (προαιρετικό)',
+                optionalBrand:      'Μάρκα (προαιρετικό)',
+                fetchBtnLabel:      'Φόρτωση',
+                cancelBtnLabel:     'Ακύρωση',
+                fetchingApiText:    'Φόρτωση από API...',
+            },
+            // ── English ──────────────────────────────────────────────────────
+            en: {
+                pageTitle:          'Marketing Catalogue',
+                countryLabel:       'Country',
+                selectBrandHeading: 'Select a Brand',
+                brandDetailsBtn:    'Details',
+                searchPlaceholder:  'Search for a range',
+                loadJsonBtn:        'Load JSON file',
+                noResults:          'No results match your search.',
+                loadingText:        'Loading data...',
+                seeDetails:         'See details',
+                modalUSPLabel:      'Unique Selling Point',
+                modalShortTextLabel:'Short Description',
+                modalLongTextLabel: 'Detailed Information',
+                technologyLabel:    'Technology',
+                testResultsLabel:   'Test Results',
+                testOfficielLabel:  'Official Test',
+                unknownDate:        'Unknown date',
+                noTestLabel:        'No test labels available.',
+                errorTitle:         'Loading Error',
+                invalidFileError:   'Invalid file format. Make sure it is a valid JSON/mktcat file.',
+                fileReadError:      'Error reading the file.',
+                fetchFromApiBtn:    'Fetch from API',
+                apiModalTitle:      'Load Catalogues from API',
+                languageLabel:      'Language',
+                optionalTreadDesign:'Tread Design (optional)',
+                optionalBrand:      'Brand (optional)',
+                fetchBtnLabel:      'Load',
+                cancelBtnLabel:     'Cancel',
+                fetchingApiText:    'Fetching from API...',
+            },
+            // ── Spanish ──────────────────────────────────────────────────────
+            es: {
+                pageTitle:          'Catálogo de Marketing',
+                countryLabel:       'País',
+                selectBrandHeading: 'Seleccionar una marca',
+                brandDetailsBtn:    'Detalles',
+                searchPlaceholder:  'Buscar una gama',
+                loadJsonBtn:        'Integrar archivo JSON',
+                noResults:          'Ningún resultado coincide con su búsqueda.',
+                loadingText:        'Cargando datos...',
+                seeDetails:         'Ver detalles',
+                modalUSPLabel:      'Punto de venta único',
+                modalShortTextLabel:'Descripción corta',
+                modalLongTextLabel: 'Información detallada',
+                technologyLabel:    'Tecnología',
+                testResultsLabel:   'Resultados de pruebas',
+                testOfficielLabel:  'Prueba oficial',
+                unknownDate:        'Fecha desconocida',
+                noTestLabel:        'No hay etiquetas de prueba disponibles.',
+                errorTitle:         'Error de carga',
+                invalidFileError:   'Formato de archivo no válido. Asegúrese de que sea un archivo JSON/mktcat válido.',
+                fileReadError:      'Error al leer el archivo.',
+                fetchFromApiBtn:    'Cargar desde API',
+                apiModalTitle:      'Cargar catálogos desde API',
+                languageLabel:      'Idioma',
+                optionalTreadDesign:'Diseño de banda de rodadura (opcional)',
+                optionalBrand:      'Marca (opcional)',
+                fetchBtnLabel:      'Cargar',
+                cancelBtnLabel:     'Cancelar',
+                fetchingApiText:    'Cargando desde API...',
+            },
+            // ── Estonian ─────────────────────────────────────────────────────
+            et: {
+                pageTitle:          'Turundusskataloog',
+                countryLabel:       'Riik',
+                selectBrandHeading: 'Vali bränd',
+                brandDetailsBtn:    'Üksikasjad',
+                searchPlaceholder:  'Otsi seeriat',
+                loadJsonBtn:        'Laadi JSON-fail',
+                noResults:          'Teie otsingule vastavaid tulemusi ei leitud.',
+                loadingText:        'Andmete laadimine...',
+                seeDetails:         'Vaata üksikasju',
+                modalUSPLabel:      'Unikaalne müügiargument',
+                modalShortTextLabel:'Lühikirjeldus',
+                modalLongTextLabel: 'Üksikasjalik teave',
+                technologyLabel:    'Tehnoloogia',
+                testResultsLabel:   'Testitulemused',
+                testOfficielLabel:  'Ametlik test',
+                unknownDate:        'Teadmata kuupäev',
+                noTestLabel:        'Testisildid puuduvad.',
+                errorTitle:         'Laadimistõrge',
+                invalidFileError:   'Vigane failivorming. Veenduge, et tegemist on kehtiva JSON/mktcat-failiga.',
+                fileReadError:      'Viga faili lugemisel.',
+                fetchFromApiBtn:    'Laadi API-st',
+                apiModalTitle:      'Kataloogide laadimine API-st',
+                languageLabel:      'Keel',
+                optionalTreadDesign:'Protektori kujundus (valikuline)',
+                optionalBrand:      'Bränd (valikuline)',
+                fetchBtnLabel:      'Laadi',
+                cancelBtnLabel:     'Tühista',
+                fetchingApiText:    'Laadimine API-st...',
+            },
+            // ── Finnish ──────────────────────────────────────────────────────
+            fi: {
+                pageTitle:          'Markkinointikatalogi',
+                countryLabel:       'Maa',
+                selectBrandHeading: 'Valitse merkki',
+                brandDetailsBtn:    'Tiedot',
+                searchPlaceholder:  'Etsi sarjaa',
+                loadJsonBtn:        'Lataa JSON-tiedosto',
+                noResults:          'Hakuasi vastaavia tuloksia ei löydy.',
+                loadingText:        'Ladataan tietoja...',
+                seeDetails:         'Katso tiedot',
+                modalUSPLabel:      'Ainutlaatuinen myyntiargumentti',
+                modalShortTextLabel:'Lyhyt kuvaus',
+                modalLongTextLabel: 'Yksityiskohtaiset tiedot',
+                technologyLabel:    'Teknologia',
+                testResultsLabel:   'Testitulokset',
+                testOfficielLabel:  'Virallinen testi',
+                unknownDate:        'Tuntematon päivämäärä',
+                noTestLabel:        'Testitunnuksia ei ole saatavilla.',
+                errorTitle:         'Latausvirhe',
+                invalidFileError:   'Virheellinen tiedostomuoto. Varmista, että tiedosto on kelvollinen JSON/mktcat-tiedosto.',
+                fileReadError:      'Virhe tiedoston lukemisessa.',
+                fetchFromApiBtn:    'Hae API:sta',
+                apiModalTitle:      'Lataa katalogit API:sta',
+                languageLabel:      'Kieli',
+                optionalTreadDesign:'Kulutuspinnan muoto (valinnainen)',
+                optionalBrand:      'Merkki (valinnainen)',
+                fetchBtnLabel:      'Hae',
+                cancelBtnLabel:     'Peruuta',
+                fetchingApiText:    'Haetaan API:sta...',
+            },
+            // ── Hebrew ───────────────────────────────────────────────────────
+            he: {
+                pageTitle:          'קטלוג שיווקי',
+                countryLabel:       'מדינה',
+                selectBrandHeading: 'בחר מותג',
+                brandDetailsBtn:    'פרטים',
+                searchPlaceholder:  'חיפוש סדרה',
+                loadJsonBtn:        'טען קובץ JSON',
+                noResults:          'לא נמצאו תוצאות התואמות לחיפוש שלך.',
+                loadingText:        'טוען נתונים...',
+                seeDetails:         'הצג פרטים',
+                modalUSPLabel:      'נקודת מכירה ייחודית',
+                modalShortTextLabel:'תיאור קצר',
+                modalLongTextLabel: 'מידע מפורט',
+                technologyLabel:    'טכנולוגיה',
+                testResultsLabel:   'תוצאות בדיקה',
+                testOfficielLabel:  'בדיקה רשמית',
+                unknownDate:        'תאריך לא ידוע',
+                noTestLabel:        'אין תוויות בדיקה זמינות.',
+                errorTitle:         'שגיאת טעינה',
+                invalidFileError:   'פורמט קובץ לא תקין. ודא שמדובר בקובץ JSON/mktcat תקין.',
+                fileReadError:      'שגיאה בקריאת הקובץ.',
+                fetchFromApiBtn:    'טען מה-API',
+                apiModalTitle:      'טעינת קטלוגים מה-API',
+                languageLabel:      'שפה',
+                optionalTreadDesign:'עיצוב סוליה (אופציונלי)',
+                optionalBrand:      'מותג (אופציונלי)',
+                fetchBtnLabel:      'טען',
+                cancelBtnLabel:     'בטל',
+                fetchingApiText:    'טוען מה-API...',
+            },
+            // ── Croatian ─────────────────────────────────────────────────────
+            hr: {
+                pageTitle:          'Marketinški katalog',
+                countryLabel:       'Zemlja',
+                selectBrandHeading: 'Odaberite marku',
+                brandDetailsBtn:    'Detalji',
+                searchPlaceholder:  'Pretraži asortiman',
+                loadJsonBtn:        'Učitaj JSON datoteku',
+                noResults:          'Nema rezultata koji odgovaraju vašoj pretrazi.',
+                loadingText:        'Učitavanje podataka...',
+                seeDetails:         'Pogledaj detalje',
+                modalUSPLabel:      'Jedinstvena prodajna prednost',
+                modalShortTextLabel:'Kratki opis',
+                modalLongTextLabel: 'Detaljne informacije',
+                technologyLabel:    'Tehnologija',
+                testResultsLabel:   'Rezultati testova',
+                testOfficielLabel:  'Službeni test',
+                unknownDate:        'Nepoznat datum',
+                noTestLabel:        'Nema dostupnih oznaka testova.',
+                errorTitle:         'Greška pri učitavanju',
+                invalidFileError:   'Neispravan format datoteke. Provjerite je li to valjana JSON/mktcat datoteka.',
+                fileReadError:      'Greška pri čitanju datoteke.',
+                fetchFromApiBtn:    "Učitaj s API-ja",
+                apiModalTitle:      "Učitavanje kataloga s API-ja",
+                languageLabel:      'Jezik',
+                optionalTreadDesign:'Dizajn gaznog sloja (neobavezno)',
+                optionalBrand:      'Marka (neobavezno)',
+                fetchBtnLabel:      'Učitaj',
+                cancelBtnLabel:     'Odustani',
+                fetchingApiText:    "Učitavanje s API-ja...",
+            },
+            // ── Hungarian ────────────────────────────────────────────────────
+            hu: {
+                pageTitle:          'Marketingkatalógus',
+                countryLabel:       'Ország',
+                selectBrandHeading: 'Válasszon márkát',
+                brandDetailsBtn:    'Részletek',
+                searchPlaceholder:  'Sorozat keresése',
+                loadJsonBtn:        'JSON-fájl betöltése',
+                noResults:          'Nincs a keresésnek megfelelő eredmény.',
+                loadingText:        'Adatok betöltése...',
+                seeDetails:         'Részletek megtekintése',
+                modalUSPLabel:      'Egyedi értékesítési pont',
+                modalShortTextLabel:'Rövid leírás',
+                modalLongTextLabel: 'Részletes információk',
+                technologyLabel:    'Technológia',
+                testResultsLabel:   'Teszteredmények',
+                testOfficielLabel:  'Hivatalos teszt',
+                unknownDate:        'Ismeretlen dátum',
+                noTestLabel:        'Nem állnak rendelkezésre tesztcímkék.',
+                errorTitle:         'Betöltési hiba',
+                invalidFileError:   'Érvénytelen fájlformátum. Győződjön meg arról, hogy érvényes JSON/mktcat fájl.',
+                fileReadError:      'Hiba a fájl olvasásakor.',
+                fetchFromApiBtn:    'Betöltés API-ból',
+                apiModalTitle:      'Katalógusok betöltése API-ból',
+                languageLabel:      'Nyelv',
+                optionalTreadDesign:'Futófelület design (opcionális)',
+                optionalBrand:      'Márka (opcionális)',
+                fetchBtnLabel:      'Betöltés',
+                cancelBtnLabel:     'Mégse',
+                fetchingApiText:    'Betöltés API-ból...',
+            },
+            // ── Indonesian ───────────────────────────────────────────────────
+            id: {
+                pageTitle:          'Katalog Pemasaran',
+                countryLabel:       'Negara',
+                selectBrandHeading: 'Pilih Merek',
+                brandDetailsBtn:    'Detail',
+                searchPlaceholder:  'Cari rangkaian produk',
+                loadJsonBtn:        'Muat file JSON',
+                noResults:          'Tidak ada hasil yang sesuai dengan pencarian Anda.',
+                loadingText:        'Memuat data...',
+                seeDetails:         'Lihat detail',
+                modalUSPLabel:      'Keunggulan Unik',
+                modalShortTextLabel:'Deskripsi Singkat',
+                modalLongTextLabel: 'Informasi Terperinci',
+                technologyLabel:    'Teknologi',
+                testResultsLabel:   'Hasil Uji',
+                testOfficielLabel:  'Uji Resmi',
+                unknownDate:        'Tanggal tidak diketahui',
+                noTestLabel:        'Tidak ada label uji yang tersedia.',
+                errorTitle:         'Kesalahan Pemuatan',
+                invalidFileError:   'Format file tidak valid. Pastikan itu adalah file JSON/mktcat yang valid.',
+                fileReadError:      'Kesalahan saat membaca file.',
+                fetchFromApiBtn:    'Muat dari API',
+                apiModalTitle:      'Muat katalog dari API',
+                languageLabel:      'Bahasa',
+                optionalTreadDesign:'Desain tapak (opsional)',
+                optionalBrand:      'Merek (opsional)',
+                fetchBtnLabel:      'Muat',
+                cancelBtnLabel:     'Batal',
+                fetchingApiText:    'Memuat dari API...',
+            },
+            // ── Icelandic ────────────────────────────────────────────────────
+            is: {
+                pageTitle:          'Markaðsskrá',
+                countryLabel:       'Land',
+                selectBrandHeading: 'Veldu vörumerki',
+                brandDetailsBtn:    'Nánar',
+                searchPlaceholder:  'Leita að línu',
+                loadJsonBtn:        'Hlaða JSON-skrá',
+                noResults:          'Engar niðurstöður samsvara leit þinni.',
+                loadingText:        'Hleður gögnum...',
+                seeDetails:         'Sjá nánar',
+                modalUSPLabel:      'Einstakt sölugildi',
+                modalShortTextLabel:'Stutt lýsing',
+                modalLongTextLabel: 'Ítarlegar upplýsingar',
+                technologyLabel:    'Tækni',
+                testResultsLabel:   'Niðurstöður prófa',
+                testOfficielLabel:  'Opinbert próf',
+                unknownDate:        'Óþekkt dagsetning',
+                noTestLabel:        'Engar prófamerki tiltæk.',
+                errorTitle:         'Villa við hleðslu',
+                invalidFileError:   'Ógilt skráarsnið. Gakktu úr skugga um að þetta sé gilt JSON/mktcat-skjal.',
+                fileReadError:      'Villa við lestur skráar.',
+                fetchFromApiBtn:    'Sækja frá API',
+                apiModalTitle:      'Hlaða vöruskrám frá API',
+                languageLabel:      'Tungumál',
+                optionalTreadDesign:'Dekkjaþjóður mynstur (valfrjálst)',
+                optionalBrand:      'Vörumerki (valfrjálst)',
+                fetchBtnLabel:      'Sækja',
+                cancelBtnLabel:     'Hætta við',
+                fetchingApiText:    'Sæki frá API...',
+            },
+            // ── Italian ──────────────────────────────────────────────────────
+            it: {
+                pageTitle:          'Catalogo Marketing',
+                countryLabel:       'Paese',
+                selectBrandHeading: 'Seleziona un marchio',
+                brandDetailsBtn:    'Dettagli',
+                searchPlaceholder:  'Cerca una gamma',
+                loadJsonBtn:        'Carica file JSON',
+                noResults:          'Nessun risultato corrisponde alla tua ricerca.',
+                loadingText:        'Caricamento dati...',
+                seeDetails:         'Vedi dettagli',
+                modalUSPLabel:      'Punto di forza unico',
+                modalShortTextLabel:'Descrizione breve',
+                modalLongTextLabel: 'Informazioni dettagliate',
+                technologyLabel:    'Tecnologia',
+                testResultsLabel:   'Risultati dei test',
+                testOfficielLabel:  'Test ufficiale',
+                unknownDate:        'Data sconosciuta',
+                noTestLabel:        'Nessuna etichetta di test disponibile.',
+                errorTitle:         'Errore di caricamento',
+                invalidFileError:   'Formato file non valido. Assicurarsi che sia un file JSON/mktcat valido.',
+                fileReadError:      'Errore durante la lettura del file.',
+                fetchFromApiBtn:    'Carica da API',
+                apiModalTitle:      'Carica cataloghi da API',
+                languageLabel:      'Lingua',
+                optionalTreadDesign:'Design del battistrada (opzionale)',
+                optionalBrand:      'Marchio (opzionale)',
+                fetchBtnLabel:      'Carica',
+                cancelBtnLabel:     'Annulla',
+                fetchingApiText:    'Caricamento da API...',
+            },
+            // ── Japanese ─────────────────────────────────────────────────────
+            ja: {
+                pageTitle:          'マーケティングカタログ',
+                countryLabel:       '国',
+                selectBrandHeading: 'ブランドを選択',
+                brandDetailsBtn:    '詳細',
+                searchPlaceholder:  'シリーズを検索',
+                loadJsonBtn:        'JSONファイルを読み込む',
+                noResults:          '検索に一致する結果がありません。',
+                loadingText:        'データを読み込み中...',
+                seeDetails:         '詳細を見る',
+                modalUSPLabel:      '独自の販売ポイント',
+                modalShortTextLabel:'短い説明',
+                modalLongTextLabel: '詳細情報',
+                technologyLabel:    '技術',
+                testResultsLabel:   'テスト結果',
+                testOfficielLabel:  '公式テスト',
+                unknownDate:        '不明な日付',
+                noTestLabel:        'テストラベルはありません。',
+                errorTitle:         '読み込みエラー',
+                invalidFileError:   '無効なファイル形式です。有効なJSON/mktcatファイルであることを確認してください。',
+                fileReadError:      'ファイルの読み込み中にエラーが発生しました。',
+                fetchFromApiBtn:    'APIから読み込む',
+                apiModalTitle:      'APIからカタログを読み込む',
+                languageLabel:      '言語',
+                optionalTreadDesign:'トレッドデザイン（任意）',
+                optionalBrand:      'ブランド（任意）',
+                fetchBtnLabel:      '読み込む',
+                cancelBtnLabel:     'キャンセル',
+                fetchingApiText:    'APIから読み込み中...',
+            },
+            // ── Kazakh ───────────────────────────────────────────────────────
+            kk: {
+                pageTitle:          'Маркетинг каталогы',
+                countryLabel:       'Ел',
+                selectBrandHeading: 'Бренд таңдаңыз',
+                brandDetailsBtn:    'Мәліметтер',
+                searchPlaceholder:  'Сериясын іздеу',
+                loadJsonBtn:        'JSON файлын жүктеу',
+                noResults:          'Іздеуіңізге сәйкес нәтижелер жоқ.',
+                loadingText:        'Деректер жүктелуде...',
+                seeDetails:         'Мәліметтерді қарау',
+                modalUSPLabel:      'Бірегей сату артықшылығы',
+                modalShortTextLabel:'Қысқа сипаттама',
+                modalLongTextLabel: 'Толық ақпарат',
+                technologyLabel:    'Технология',
+                testResultsLabel:   'Сынақ нәтижелері',
+                testOfficielLabel:  'Ресми сынақ',
+                unknownDate:        'Белгісіз күн',
+                noTestLabel:        'Сынақ белгілері жоқ.',
+                errorTitle:         'Жүктеу қатесі',
+                invalidFileError:   'Жарамсыз файл форматы. Файлдың жарамды JSON/mktcat файлы екенін тексеріңіз.',
+                fileReadError:      'Файлды оқу кезінде қате орын алды.',
+                fetchFromApiBtn:    'API-дан жүктеу',
+                apiModalTitle:      'API-дан каталогтарды жүктеу',
+                languageLabel:      'Тіл',
+                optionalTreadDesign:'Протектор дизайны (міндетті емес)',
+                optionalBrand:      'Бренд (міндетті емес)',
+                fetchBtnLabel:      'Жүктеу',
+                cancelBtnLabel:     'Болдырмау',
+                fetchingApiText:    'API-дан жүктелуде...',
+            },
+            // ── Korean ───────────────────────────────────────────────────────
+            ko: {
+                pageTitle:          '마케팅 카탈로그',
+                countryLabel:       '국가',
+                selectBrandHeading: '브랜드 선택',
+                brandDetailsBtn:    '세부 정보',
+                searchPlaceholder:  '시리즈 검색',
+                loadJsonBtn:        'JSON 파일 불러오기',
+                noResults:          '검색 결과가 없습니다.',
+                loadingText:        '데이터 불러오는 중...',
+                seeDetails:         '세부 정보 보기',
+                modalUSPLabel:      '고유 판매 포인트',
+                modalShortTextLabel:'짧은 설명',
+                modalLongTextLabel: '상세 정보',
+                technologyLabel:    '기술',
+                testResultsLabel:   '테스트 결과',
+                testOfficielLabel:  '공식 테스트',
+                unknownDate:        '알 수 없는 날짜',
+                noTestLabel:        '사용 가능한 테스트 레이블이 없습니다.',
+                errorTitle:         '로드 오류',
+                invalidFileError:   '잘못된 파일 형식입니다. 유효한 JSON/mktcat 파일인지 확인하십시오.',
+                fileReadError:      '파일을 읽는 중 오류가 발생했습니다.',
+                fetchFromApiBtn:    'API에서 불러오기',
+                apiModalTitle:      'API에서 카탈로그 불러오기',
+                languageLabel:      '언어',
+                optionalTreadDesign:'트레드 디자인 (선택)',
+                optionalBrand:      '브랜드 (선택)',
+                fetchBtnLabel:      '불러오기',
+                cancelBtnLabel:     '취소',
+                fetchingApiText:    'API에서 불러오는 중...',
+            },
+            // ── Lithuanian ───────────────────────────────────────────────────
+            lt: {
+                pageTitle:          'Rinkodaros katalogas',
+                countryLabel:       'Šalis',
+                selectBrandHeading: 'Pasirinkite prekės ženklą',
+                brandDetailsBtn:    'Detalės',
+                searchPlaceholder:  'Ieškoti serijos',
+                loadJsonBtn:        'Įkelti JSON failą',
+                noResults:          'Nerasta jokių rezultatų, atitinkančių jūsų paiešką.',
+                loadingText:        'Kraunami duomenys...',
+                seeDetails:         'Žiūrėti detales',
+                modalUSPLabel:      'Unikalus pardavimo argumentas',
+                modalShortTextLabel:'Trumpas aprašymas',
+                modalLongTextLabel: 'Išsami informacija',
+                technologyLabel:    'Technologija',
+                testResultsLabel:   'Bandymų rezultatai',
+                testOfficielLabel:  'Oficialus bandymas',
+                unknownDate:        'Nežinoma data',
+                noTestLabel:        'Nėra galimų bandymų etikečių.',
+                errorTitle:         'Įkėlimo klaida',
+                invalidFileError:   'Netinkamas failo formatas. Įsitikinkite, kad tai galiojantis JSON/mktcat failas.',
+                fileReadError:      'Klaida skaitant failą.',
+                fetchFromApiBtn:    'Įkelti iš API',
+                apiModalTitle:      'Įkelti katalogus iš API',
+                languageLabel:      'Kalba',
+                optionalTreadDesign:'Protektoriaus dizainas (neprivaloma)',
+                optionalBrand:      'Prekės ženklas (neprivaloma)',
+                fetchBtnLabel:      'Įkelti',
+                cancelBtnLabel:     'Atšaukti',
+                fetchingApiText:    'Įkeliama iš API...',
+            },
+            // ── Latvian ──────────────────────────────────────────────────────
+            lv: {
+                pageTitle:          'Mārketinga katalogs',
+                countryLabel:       'Valsts',
+                selectBrandHeading: 'Izvēlēties zīmolu',
+                brandDetailsBtn:    'Detaļas',
+                searchPlaceholder:  'Meklēt sēriju',
+                loadJsonBtn:        'Ielādēt JSON failu',
+                noResults:          'Nav atrasts neviens rezultāts, kas atbilstu jūsu meklēšanai.',
+                loadingText:        'Datu ielāde...',
+                seeDetails:         'Skatīt detaļas',
+                modalUSPLabel:      'Unikālais pārdošanas arguments',
+                modalShortTextLabel:'Īss apraksts',
+                modalLongTextLabel: 'Detalizēta informācija',
+                technologyLabel:    'Tehnoloģija',
+                testResultsLabel:   'Testu rezultāti',
+                testOfficielLabel:  'Oficiālais tests',
+                unknownDate:        'Nezināms datums',
+                noTestLabel:        'Nav pieejamu testu etiķešu.',
+                errorTitle:         'Ielādes kļūda',
+                invalidFileError:   'Nederīgs faila formāts. Pārliecinieties, ka tas ir derīgs JSON/mktcat fails.',
+                fileReadError:      'Kļūda lasot failu.',
+                fetchFromApiBtn:    'Ielādēt no API',
+                apiModalTitle:      'Ielādēt katalogus no API',
+                languageLabel:      'Valoda',
+                optionalTreadDesign:'Protektora dizains (pēc izvēles)',
+                optionalBrand:      'Zīmols (pēc izvēles)',
+                fetchBtnLabel:      'Ielādēt',
+                cancelBtnLabel:     'Atcelt',
+                fetchingApiText:    'Ielādē no API...',
+            },
+            // ── Macedonian ───────────────────────────────────────────────────
+            mk: {
+                pageTitle:          'Маркетинг каталог',
+                countryLabel:       'Земја',
+                selectBrandHeading: 'Изберете марка',
+                brandDetailsBtn:    'Детали',
+                searchPlaceholder:  'Пребарај серија',
+                loadJsonBtn:        'Вчитај JSON датотека',
+                noResults:          'Нема резултати кои одговараат на вашето пребарување.',
+                loadingText:        'Се вчитуваат податоци...',
+                seeDetails:         'Погледни детали',
+                modalUSPLabel:      'Уникатна продажна предност',
+                modalShortTextLabel:'Краток опис',
+                modalLongTextLabel: 'Детални информации',
+                technologyLabel:    'Технологија',
+                testResultsLabel:   'Резултати од тестови',
+                testOfficielLabel:  'Официјален тест',
+                unknownDate:        'Непознат датум',
+                noTestLabel:        'Нема достапни тест ознаки.',
+                errorTitle:         'Грешка при вчитување',
+                invalidFileError:   'Неважечки формат на датотека. Проверете дали е валидна JSON/mktcat датотека.',
+                fileReadError:      'Грешка при читање на датотеката.',
+                fetchFromApiBtn:    'Вчитај од API',
+                apiModalTitle:      'Вчитување каталози од API',
+                languageLabel:      'Јазик',
+                optionalTreadDesign:'Дизајн на газен слој (опционално)',
+                optionalBrand:      'Марка (опционално)',
+                fetchBtnLabel:      'Вчитај',
+                cancelBtnLabel:     'Откажи',
+                fetchingApiText:    'Вчитување од API...',
+            },
+            // ── Norwegian Bokmål ─────────────────────────────────────────────
+            nb: {
+                pageTitle:          'Markedsføringskatalog',
+                countryLabel:       'Land',
+                selectBrandHeading: 'Velg et merke',
+                brandDetailsBtn:    'Detaljer',
+                searchPlaceholder:  'Søk etter en serie',
+                loadJsonBtn:        'Last inn JSON-fil',
+                noResults:          'Ingen resultater samsvarer med søket ditt.',
+                loadingText:        'Laster inn data...',
+                seeDetails:         'Se detaljer',
+                modalUSPLabel:      'Unikt salgsargument',
+                modalShortTextLabel:'Kort beskrivelse',
+                modalLongTextLabel: 'Detaljert informasjon',
+                technologyLabel:    'Teknologi',
+                testResultsLabel:   'Testresultater',
+                testOfficielLabel:  'Offisiell test',
+                unknownDate:        'Ukjent dato',
+                noTestLabel:        'Ingen testetikett tilgjengelig.',
+                errorTitle:         'Feil ved innlasting',
+                invalidFileError:   'Ugyldig filformat. Sørg for at det er en gyldig JSON/mktcat-fil.',
+                fileReadError:      'Feil ved lesing av filen.',
+                fetchFromApiBtn:    'Hent fra API',
+                apiModalTitle:      'Last inn kataloger fra API',
+                languageLabel:      'Språk',
+                optionalTreadDesign:'Mønsterdesign (valfritt)',
+                optionalBrand:      'Merke (valfritt)',
+                fetchBtnLabel:      'Hent',
+                cancelBtnLabel:     'Avbryt',
+                fetchingApiText:    'Henter fra API...',
+            },
+            // ── Dutch ────────────────────────────────────────────────────────
+            nl: {
+                pageTitle:          'Marketingcatalogus',
+                countryLabel:       'Land',
+                selectBrandHeading: 'Selecteer een merk',
+                brandDetailsBtn:    'Details',
+                searchPlaceholder:  'Zoek een gamma',
+                loadJsonBtn:        'JSON-bestand laden',
+                noResults:          'Geen resultaten komen overeen met uw zoekopdracht.',
+                loadingText:        'Gegevens laden...',
+                seeDetails:         'Details bekijken',
+                modalUSPLabel:      'Uniek verkoopargument',
+                modalShortTextLabel:'Korte beschrijving',
+                modalLongTextLabel: 'Gedetailleerde informatie',
+                technologyLabel:    'Technologie',
+                testResultsLabel:   'Testresultaten',
+                testOfficielLabel:  'Officiële test',
+                unknownDate:        'Onbekende datum',
+                noTestLabel:        'Geen testetiket beschikbaar.',
+                errorTitle:         'Ladfout',
+                invalidFileError:   'Ongeldig bestandsformaat. Zorg ervoor dat het een geldig JSON/mktcat-bestand is.',
+                fileReadError:      'Fout bij het lezen van het bestand.',
+                fetchFromApiBtn:    'Laden via API',
+                apiModalTitle:      'Catalogi laden via API',
+                languageLabel:      'Taal',
+                optionalTreadDesign:'Profielontwerp (optioneel)',
+                optionalBrand:      'Merk (optioneel)',
+                fetchBtnLabel:      'Laden',
+                cancelBtnLabel:     'Annuleren',
+                fetchingApiText:    'Laden via API...',
+            },
+            // ── Polish ───────────────────────────────────────────────────────
+            pl: {
+                pageTitle:          'Katalog marketingowy',
+                countryLabel:       'Kraj',
+                selectBrandHeading: 'Wybierz markę',
+                brandDetailsBtn:    'Szczegóły',
+                searchPlaceholder:  'Szukaj serii',
+                loadJsonBtn:        'Załaduj plik JSON',
+                noResults:          'Brak wyników pasujących do wyszukiwania.',
+                loadingText:        'Ładowanie danych...',
+                seeDetails:         'Zobacz szczegóły',
+                modalUSPLabel:      'Unikalna propozycja sprzedaży',
+                modalShortTextLabel:'Krótki opis',
+                modalLongTextLabel: 'Szczegółowe informacje',
+                technologyLabel:    'Technologia',
+                testResultsLabel:   'Wyniki testów',
+                testOfficielLabel:  'Oficjalny test',
+                unknownDate:        'Nieznana data',
+                noTestLabel:        'Brak dostępnych etykiet testowych.',
+                errorTitle:         'Błąd ładowania',
+                invalidFileError:   'Nieprawidłowy format pliku. Upewnij się, że jest to prawidłowy plik JSON/mktcat.',
+                fileReadError:      'Błąd podczas odczytywania pliku.',
+                fetchFromApiBtn:    'Pobierz z API',
+                apiModalTitle:      'Pobierz katalogi z API',
+                languageLabel:      'Język',
+                optionalTreadDesign:'Wzór bieżnika (opcjonalny)',
+                optionalBrand:      'Marka (opcjonalna)',
+                fetchBtnLabel:      'Pobierz',
+                cancelBtnLabel:     'Anuluj',
+                fetchingApiText:    'Pobieranie z API...',
+            },
+            // ── Portuguese ───────────────────────────────────────────────────
+            pt: {
+                pageTitle:          'Catálogo de Marketing',
+                countryLabel:       'País',
+                selectBrandHeading: 'Selecionar uma marca',
+                brandDetailsBtn:    'Detalhes',
+                searchPlaceholder:  'Pesquisar uma gama',
+                loadJsonBtn:        'Integrar ficheiro JSON',
+                noResults:          'Nenhum resultado corresponde à sua pesquisa.',
+                loadingText:        'Carregando dados...',
+                seeDetails:         'Ver detalhes',
+                modalUSPLabel:      'Ponto de venda único',
+                modalShortTextLabel:'Descrição curta',
+                modalLongTextLabel: 'Informações detalhadas',
+                technologyLabel:    'Tecnologia',
+                testResultsLabel:   'Resultados de testes',
+                testOfficielLabel:  'Teste oficial',
+                unknownDate:        'Data desconhecida',
+                noTestLabel:        'Nenhum rótulo de teste disponível.',
+                errorTitle:         'Erro de carregamento',
+                invalidFileError:   'Formato de ficheiro inválido. Certifique-se de que é um ficheiro JSON/mktcat válido.',
+                fileReadError:      'Erro ao ler o ficheiro.',
+                fetchFromApiBtn:    'Carregar via API',
+                apiModalTitle:      'Carregar catálogos via API',
+                languageLabel:      'Idioma',
+                optionalTreadDesign:'Design da banda de rolamento (opcional)',
+                optionalBrand:      'Marca (opcional)',
+                fetchBtnLabel:      'Carregar',
+                cancelBtnLabel:     'Cancelar',
+                fetchingApiText:    'Carregando via API...',
+            },
+            // ── Romanian ─────────────────────────────────────────────────────
+            ro: {
+                pageTitle:          'Catalog de marketing',
+                countryLabel:       'Țară',
+                selectBrandHeading: 'Selectați un brand',
+                brandDetailsBtn:    'Detalii',
+                searchPlaceholder:  'Caută o gamă',
+                loadJsonBtn:        'Încărcați fișierul JSON',
+                noResults:          'Niciun rezultat nu corespunde căutării dvs.',
+                loadingText:        'Se încarcă datele...',
+                seeDetails:         'Vezi detalii',
+                modalUSPLabel:      'Punct unic de vânzare',
+                modalShortTextLabel:'Descriere scurtă',
+                modalLongTextLabel: 'Informații detaliate',
+                technologyLabel:    'Tehnologie',
+                testResultsLabel:   'Rezultate teste',
+                testOfficielLabel:  'Test oficial',
+                unknownDate:        'Dată necunoscută',
+                noTestLabel:        'Nu sunt disponibile etichete de testare.',
+                errorTitle:         'Eroare de încărcare',
+                invalidFileError:   'Format de fișier invalid. Asigurați-vă că este un fișier JSON/mktcat valid.',
+                fileReadError:      'Eroare la citirea fișierului.',
+                fetchFromApiBtn:    'Încarcă din API',
+                apiModalTitle:      'Încărcați cataloage din API',
+                languageLabel:      'Limbă',
+                optionalTreadDesign:'Design bandă de rulare (opțional)',
+                optionalBrand:      'Marcă (opțional)',
+                fetchBtnLabel:      'Încarcă',
+                cancelBtnLabel:     'Anulare',
+                fetchingApiText:    'Se încarcă din API...',
+            },
+            // ── Russian ──────────────────────────────────────────────────────
+            ru: {
+                pageTitle:          'Маркетинговый каталог',
+                countryLabel:       'Страна',
+                selectBrandHeading: 'Выберите марку',
+                brandDetailsBtn:    'Подробнее',
+                searchPlaceholder:  'Поиск серии',
+                loadJsonBtn:        'Загрузить файл JSON',
+                noResults:          'Результаты, соответствующие вашему запросу, не найдены.',
+                loadingText:        'Загрузка данных...',
+                seeDetails:         'Подробнее',
+                modalUSPLabel:      'Уникальное торговое предложение',
+                modalShortTextLabel:'Краткое описание',
+                modalLongTextLabel: 'Подробная информация',
+                technologyLabel:    'Технология',
+                testResultsLabel:   'Результаты тестов',
+                testOfficielLabel:  'Официальный тест',
+                unknownDate:        'Дата неизвестна',
+                noTestLabel:        'Тестовые метки недоступны.',
+                errorTitle:         'Ошибка загрузки',
+                invalidFileError:   'Неверный формат файла. Убедитесь, что это допустимый файл JSON/mktcat.',
+                fileReadError:      'Ошибка при чтении файла.',
+                fetchFromApiBtn:    'Загрузить из API',
+                apiModalTitle:      'Загрузка каталогов из API',
+                languageLabel:      'Язык',
+                optionalTreadDesign:'Дизайн протектора (необязательно)',
+                optionalBrand:      'Бренд (необязательно)',
+                fetchBtnLabel:      'Загрузить',
+                cancelBtnLabel:     'Отмена',
+                fetchingApiText:    'Загрузка из API...',
+            },
+            // ── Slovak ───────────────────────────────────────────────────────
+            sk: {
+                pageTitle:          'Marketingový katalóg',
+                countryLabel:       'Krajina',
+                selectBrandHeading: 'Vyberte značku',
+                brandDetailsBtn:    'Detaily',
+                searchPlaceholder:  'Vyhľadať sériu',
+                loadJsonBtn:        'Načítať súbor JSON',
+                noResults:          'Žiadne výsledky nezodpovedajú vášmu hľadaniu.',
+                loadingText:        'Načítavanie údajov...',
+                seeDetails:         'Zobraziť detaily',
+                modalUSPLabel:      'Unikátny predajný bod',
+                modalShortTextLabel:'Krátky popis',
+                modalLongTextLabel: 'Podrobné informácie',
+                technologyLabel:    'Technológia',
+                testResultsLabel:   'Výsledky testov',
+                testOfficielLabel:  'Oficiálny test',
+                unknownDate:        'Neznámy dátum',
+                noTestLabel:        'Žiadne testovacie štítky nie sú k dispozícii.',
+                errorTitle:         'Chyba pri načítaní',
+                invalidFileError:   'Neplatný formát súboru. Uistite sa, že ide o platný súbor JSON/mktcat.',
+                fileReadError:      'Chyba pri čítaní súboru.',
+                fetchFromApiBtn:    'Načítať z API',
+                apiModalTitle:      'Načítanie katalógov z API',
+                languageLabel:      'Jazyk',
+                optionalTreadDesign:'Vzor dezénu (voliteľné)',
+                optionalBrand:      'Značka (voliteľné)',
+                fetchBtnLabel:      'Načítať',
+                cancelBtnLabel:     'Zrušiť',
+                fetchingApiText:    'Načítanie z API...',
+            },
+            // ── Slovene ──────────────────────────────────────────────────────
+            sl: {
+                pageTitle:          'Marketinški katalog',
+                countryLabel:       'Država',
+                selectBrandHeading: 'Izberite znamko',
+                brandDetailsBtn:    'Podrobnosti',
+                searchPlaceholder:  'Poišči program',
+                loadJsonBtn:        'Naloži datoteko JSON',
+                noResults:          'Ni rezultatov, ki bi ustrezali vašemu iskanju.',
+                loadingText:        'Nalaganje podatkov...',
+                seeDetails:         'Oglej si podrobnosti',
+                modalUSPLabel:      'Edinstvena prodajna prednost',
+                modalShortTextLabel:'Kratek opis',
+                modalLongTextLabel: 'Podrobne informacije',
+                technologyLabel:    'Tehnologija',
+                testResultsLabel:   'Rezultati testov',
+                testOfficielLabel:  'Uradni test',
+                unknownDate:        'Neznan datum',
+                noTestLabel:        'Ni razpoložljivih testnih oznak.',
+                errorTitle:         'Napaka pri nalaganju',
+                invalidFileError:   'Neveljavna oblika datoteke. Preverite, ali gre za veljavno datoteko JSON/mktcat.',
+                fileReadError:      'Napaka pri branju datoteke.',
+                fetchFromApiBtn:    'Naloži iz API',
+                apiModalTitle:      'Nalaganje katalogov iz API',
+                languageLabel:      'Jezik',
+                optionalTreadDesign:'Vzorec profila (neobvezno)',
+                optionalBrand:      'Znamka (neobvezno)',
+                fetchBtnLabel:      'Naloži',
+                cancelBtnLabel:     'Prekliči',
+                fetchingApiText:    'Nalaganje iz API...',
+            },
+            // ── Serbian ──────────────────────────────────────────────────────
+            sr: {
+                pageTitle:          'Маркетиншки каталог',
+                countryLabel:       'Земља',
+                selectBrandHeading: 'Одаберите марку',
+                brandDetailsBtn:    'Детаљи',
+                searchPlaceholder:  'Претражи серију',
+                loadJsonBtn:        'Учитај JSON датотеку',
+                noResults:          'Нема резултата који одговарају вашој претрази.',
+                loadingText:        'Учитавање података...',
+                seeDetails:         'Погледај детаље',
+                modalUSPLabel:      'Јединствена продајна предност',
+                modalShortTextLabel:'Кратак опис',
+                modalLongTextLabel: 'Детаљне информације',
+                technologyLabel:    'Технологија',
+                testResultsLabel:   'Резултати тестова',
+                testOfficielLabel:  'Службени тест',
+                unknownDate:        'Непознат датум',
+                noTestLabel:        'Нема доступних ознака тестова.',
+                errorTitle:         'Грешка при учитавању',
+                invalidFileError:   'Неисправан формат датотеке. Проверите да ли је то важећа JSON/mktcat датотека.',
+                fileReadError:      'Грешка при читању датотеке.',
+                fetchFromApiBtn:    'Учитај из API',
+                apiModalTitle:      'Учитавање каталога из API',
+                languageLabel:      'Језик',
+                optionalTreadDesign:'Дизајн на газен слој (опционо)',
+                optionalBrand:      'Бренд (опционо)',
+                fetchBtnLabel:      'Учитај',
+                cancelBtnLabel:     'Откажи',
+                fetchingApiText:    'Учитавање из API...',
+            },
+            // ── Swedish ──────────────────────────────────────────────────────
+            sv: {
+                pageTitle:          'Marknadsföringskatalog',
+                countryLabel:       'Land',
+                selectBrandHeading: 'Välj ett varumärke',
+                brandDetailsBtn:    'Detaljer',
+                searchPlaceholder:  'Sök en serie',
+                loadJsonBtn:        'Ladda JSON-fil',
+                noResults:          'Inga resultat matchar din sökning.',
+                loadingText:        'Laddar data...',
+                seeDetails:         'Se detaljer',
+                modalUSPLabel:      'Unikt säljargument',
+                modalShortTextLabel:'Kort beskrivning',
+                modalLongTextLabel: 'Detaljerad information',
+                technologyLabel:    'Teknologi',
+                testResultsLabel:   'Testresultat',
+                testOfficielLabel:  'Officiellt test',
+                unknownDate:        'Okänt datum',
+                noTestLabel:        'Inga testetiketter tillgängliga.',
+                errorTitle:         'Fel vid inläsning',
+                invalidFileError:   'Ogiltigt filformat. Se till att det är en giltig JSON/mktcat-fil.',
+                fileReadError:      'Fel vid läsning av filen.',
+                fetchFromApiBtn:    'Hämta från API',
+                apiModalTitle:      'Ladda kataloger från API',
+                languageLabel:      'Språk',
+                optionalTreadDesign:'Mönsterdesign (valfritt)',
+                optionalBrand:      'Varumärke (valfritt)',
+                fetchBtnLabel:      'Hämta',
+                cancelBtnLabel:     'Avbryt',
+                fetchingApiText:    'Hämtar från API...',
+            },
+            // ── Thai ─────────────────────────────────────────────────────────
+            th: {
+                pageTitle:          'แคตาล็อกการตลาด',
+                countryLabel:       'ประเทศ',
+                selectBrandHeading: 'เลือกแบรนด์',
+                brandDetailsBtn:    'รายละเอียด',
+                searchPlaceholder:  'ค้นหาซีรีส์',
+                loadJsonBtn:        'โหลดไฟล์ JSON',
+                noResults:          'ไม่มีผลลัพธ์ที่ตรงกับการค้นหาของคุณ',
+                loadingText:        'กำลังโหลดข้อมูล...',
+                seeDetails:         'ดูรายละเอียด',
+                modalUSPLabel:      'จุดขายที่เป็นเอกลักษณ์',
+                modalShortTextLabel:'คำอธิบายสั้น',
+                modalLongTextLabel: 'ข้อมูลโดยละเอียด',
+                technologyLabel:    'เทคโนโลยี',
+                testResultsLabel:   'ผลการทดสอบ',
+                testOfficielLabel:  'การทดสอบอย่างเป็นทางการ',
+                unknownDate:        'ไม่ทราบวันที่',
+                noTestLabel:        'ไม่มีป้ายกำกับการทดสอบ',
+                errorTitle:         'เกิดข้อผิดพลาดในการโหลด',
+                invalidFileError:   'รูปแบบไฟล์ไม่ถูกต้อง ตรวจสอบให้แน่ใจว่าเป็นไฟล์ JSON/mktcat ที่ถูกต้อง',
+                fileReadError:      'เกิดข้อผิดพลาดในการอ่านไฟล์',
+                fetchFromApiBtn:    'โหลดจาก API',
+                apiModalTitle:      'โหลดแคตาล็อกจาก API',
+                languageLabel:      'ภาษา',
+                optionalTreadDesign:'การออกแบบดอกยาง (ไม่บังคับ)',
+                optionalBrand:      'แบรนด์ (ไม่บังคับ)',
+                fetchBtnLabel:      'โหลด',
+                cancelBtnLabel:     'ยกเลิก',
+                fetchingApiText:    'กำลังโหลดจาก API...',
+            },
+            // ── Turkish ──────────────────────────────────────────────────────
+            tr: {
+                pageTitle:          'Pazarlama Kataloğu',
+                countryLabel:       'Ülke',
+                selectBrandHeading: 'Bir Marka Seçin',
+                brandDetailsBtn:    'Ayrıntılar',
+                searchPlaceholder:  'Seri ara',
+                loadJsonBtn:        'JSON dosyasını yükle',
+                noResults:          'Aramanızla eşleşen sonuç bulunamadı.',
+                loadingText:        'Veriler yükleniyor...',
+                seeDetails:         'Ayrıntıları görüntüle',
+                modalUSPLabel:      'Benzersiz Satış Noktası',
+                modalShortTextLabel:'Kısa Açıklama',
+                modalLongTextLabel: 'Ayrıntılı Bilgi',
+                technologyLabel:    'Teknoloji',
+                testResultsLabel:   'Test Sonuçları',
+                testOfficielLabel:  'Resmi Test',
+                unknownDate:        'Bilinmeyen tarih',
+                noTestLabel:        'Test etiketi mevcut değil.',
+                errorTitle:         'Yükleme Hatası',
+                invalidFileError:   'Geçersiz dosya biçimi. Geçerli bir JSON/mktcat dosyası olduğundan emin olun.',
+                fileReadError:      'Dosya okunurken hata oluştu.',
+                fetchFromApiBtn:    "API'den yükle",
+                apiModalTitle:      "Katalogları API'den yükle",
+                languageLabel:      'Dil',
+                optionalTreadDesign:'Sırt tasarımı (isteğe bağlı)',
+                optionalBrand:      'Marka (isteğe bağlı)',
+                fetchBtnLabel:      'Yükle',
+                cancelBtnLabel:     'İptal',
+                fetchingApiText:    "API'den yükleniyor...",
+            },
+            // ── Ukrainian ────────────────────────────────────────────────────
+            uk: {
+                pageTitle:          'Маркетинговий каталог',
+                countryLabel:       'Країна',
+                selectBrandHeading: 'Оберіть бренд',
+                brandDetailsBtn:    'Деталі',
+                searchPlaceholder:  'Пошук серії',
+                loadJsonBtn:        'Завантажити файл JSON',
+                noResults:          'Результатів, що відповідають вашому запиту, не знайдено.',
+                loadingText:        'Завантаження даних...',
+                seeDetails:         'Переглянути деталі',
+                modalUSPLabel:      'Унікальна торгова пропозиція',
+                modalShortTextLabel:'Короткий опис',
+                modalLongTextLabel: 'Детальна інформація',
+                technologyLabel:    'Технологія',
+                testResultsLabel:   'Результати тестів',
+                testOfficielLabel:  'Офіційний тест',
+                unknownDate:        'Невідома дата',
+                noTestLabel:        'Тестові метки недоступні.',
+                errorTitle:         'Помилка завантаження',
+                invalidFileError:   'Недійсний формат файлу. Переконайтеся, що це дійсний файл JSON/mktcat.',
+                fileReadError:      'Помилка при читанні файлу.',
+                fetchFromApiBtn:    'Завантажити з API',
+                apiModalTitle:      'Завантаження каталогів з API',
+                languageLabel:      'Мова',
+                optionalTreadDesign:"Дизайн протектора (необов'язково)",
+                optionalBrand:      "Бренд (необов'язково)",
+                fetchBtnLabel:      'Завантажити',
+                cancelBtnLabel:     'Скасувати',
+                fetchingApiText:    'Завантаження з API...',
+            },
+            // ── Vietnamese ───────────────────────────────────────────────────
+            vi: {
+                pageTitle:          'Danh mục tiếp thị',
+                countryLabel:       'Quốc gia',
+                selectBrandHeading: 'Chọn thương hiệu',
+                brandDetailsBtn:    'Chi tiết',
+                searchPlaceholder:  'Tìm kiếm dòng sản phẩm',
+                loadJsonBtn:        'Tải tệp JSON',
+                noResults:          'Không có kết quả nào phù hợp với tìm kiếm của bạn.',
+                loadingText:        'Đang tải dữ liệu...',
+                seeDetails:         'Xem chi tiết',
+                modalUSPLabel:      'Điểm bán hàng độc đáo',
+                modalShortTextLabel:'Mô tả ngắn',
+                modalLongTextLabel: 'Thông tin chi tiết',
+                technologyLabel:    'Công nghệ',
+                testResultsLabel:   'Kết quả kiểm tra',
+                testOfficielLabel:  'Kiểm tra chính thức',
+                unknownDate:        'Ngày không xác định',
+                noTestLabel:        'Không có nhãn kiểm tra nào.',
+                errorTitle:         'Lỗi tải dữ liệu',
+                invalidFileError:   'Định dạng tệp không hợp lệ. Hãy đảm bảo đây là tệp JSON/mktcat hợp lệ.',
+                fileReadError:      'Lỗi khi đọc tệp.',
+                fetchFromApiBtn:    'Tải từ API',
+                apiModalTitle:      'Tải danh mục từ API',
+                languageLabel:      'Ngôn ngữ',
+                optionalTreadDesign:'Thiết kế gai lốp (tùy chọn)',
+                optionalBrand:      'Thương hiệu (tùy chọn)',
+                fetchBtnLabel:      'Tải',
+                cancelBtnLabel:     'Hủy',
+                fetchingApiText:    'Đang tải từ API...',
+            },
+            // ── Chinese ──────────────────────────────────────────────────────
+            zh: {
+                pageTitle:          '营销目录',
+                countryLabel:       '国家',
+                selectBrandHeading: '选择品牌',
+                brandDetailsBtn:    '详情',
+                searchPlaceholder:  '搜索系列',
+                loadJsonBtn:        '加载 JSON 文件',
+                noResults:          '没有与您的搜索匹配的结果。',
+                loadingText:        '正在加载数据...',
+                seeDetails:         '查看详情',
+                modalUSPLabel:      '独特卖点',
+                modalShortTextLabel:'简短描述',
+                modalLongTextLabel: '详细信息',
+                technologyLabel:    '技术',
+                testResultsLabel:   '测试结果',
+                testOfficielLabel:  '官方测试',
+                unknownDate:        '未知日期',
+                noTestLabel:        '没有可用的测试标签。',
+                errorTitle:         '加载错误',
+                invalidFileError:   '文件格式无效。请确保这是一个有效的 JSON/mktcat 文件。',
+                fileReadError:      '读取文件时出错。',
+                fetchFromApiBtn:    '从API加载',
+                apiModalTitle:      '从API加载目录',
+                languageLabel:      '语言',
+                optionalTreadDesign:'胎纹设计（可选）',
+                optionalBrand:      '品牌（可选）',
+                fetchBtnLabel:      '加载',
+                cancelBtnLabel:     '取消',
+                fetchingApiText:    '正在从API加载...',
+            },
+        };
+
+        /** Return the translated string for key, falling back to French then the key itself. */
+        function t(key) {
+            return (i18n[activeLanguage] && i18n[activeLanguage][key]) || i18n.fr[key] || key;
+        }
+
+        /** Detect the UI language from the loaded JSON or the URL query-string. */
+        function detectLanguage(data) {
+            // 0. API language override (set by fetchFromApi before calling loadData)
+            if (pendingApiLanguage !== null) {
+                const lang = pendingApiLanguage;
+                pendingApiLanguage = null;
+                if (i18n[lang]) return lang;
+            }
+            // 1. URL ?language=XX takes top priority
+            const params = new URLSearchParams(window.location.search);
+            const qsLang = params.get('language');
+            if (qsLang) {
+                const norm = qsLang.toLowerCase().split('-')[0];
+                if (i18n[norm]) return norm;
+            }
+            // 2. LanguageCode from the first item in the JSON
+            try {
+                const rawCode = data.MktCatHeader.Items[0].LanguageDependentData[0].LanguageCode;
+                if (rawCode) {
+                    const norm = rawCode.toLowerCase().split('-')[0];
+                    if (i18n[norm]) return norm;
+                }
+            } catch (e) { /* fall through */ }
+            // 3. Default to French
+            return 'fr';
+        }
+
+        /** Apply the active language to every data-i18n / data-i18n-placeholder element. */
+        function applyTranslations() {
+            document.title = t('pageTitle');
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                el.textContent = t(el.dataset.i18n);
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                el.placeholder = t(el.dataset.i18nPlaceholder);
+            });
+        }
 
         const searchBox = document.getElementById('searchBox');
         const fileInput = document.getElementById('fileInput');
@@ -274,6 +1810,8 @@
         const errorDetails = document.getElementById('errorDetails');
         const detailModal = document.getElementById('detailModal');
 
+        // ── Utility helpers ────────────────────────────────────────────────────
+
         function formatMichelinUrl(url, height = 500) {
             if (!url || typeof url !== 'string' || !url.includes('michelin.com')) return url;
             let cleanUrl = url.trim();
@@ -283,13 +1821,21 @@
             return `${formattedUrl}${separator}t=resize&height=${height}`;
         }
 
-        function handleImgLoad(img) {
-            img.classList.add('loaded');
-        }
+        function handleImgLoad(img) { img.classList.add('loaded'); }
 
         function handleImgError(img) {
-            img.src = 'https://url.de.m.mimecastprotect.com/s/8m3TCOgm39H07QrM6fEfQIGSNm-?domain=placehold.co';
+            img.src = 'https://placehold.co/300x300?text=No+Image';
             img.classList.add('img-error');
+        }
+
+        /** Return the formatted logo URL for a brand, or null if unavailable. */
+        function getBrandLogoUrl(brandName, height = 80) {
+            if (!catalogueData || !catalogueData.MktCatHeader || !catalogueData.MktCatHeader.BrandInfo) return null;
+            const key = (brandName || '').toUpperCase();
+            const brands = catalogueData.MktCatHeader.BrandInfo.filter(b => b.Brand.toUpperCase() === key);
+            const entry = brands.find(b => b.BrandWallPaper && b.BrandWallPaper.length > 0) || brands[0];
+            if (!entry || !entry.BrandWallPaper || entry.BrandWallPaper.length === 0) return null;
+            return formatMichelinUrl(entry.BrandWallPaper[0].URI, height);
         }
 
         function renderMarkdown(text) {
@@ -298,8 +1844,10 @@
             return DOMPurify.sanitize(rawHtml);
         }
 
+        // ── Initialisation ─────────────────────────────────────────────────────
+
         async function init() {
-            searchBox.addEventListener('input', handleSearch);
+            searchBox.addEventListener('input', applyFilters);
             fileInput.addEventListener('change', handleFileSelect);
             await fetchData();
         }
@@ -307,30 +1855,26 @@
         function handleFileSelect(event) {
             const file = event.target.files[0];
             if (!file) return;
-
             loadingState.classList.remove('hidden');
             errorState.classList.add('hidden');
             resultsGrid.innerHTML = '';
-
             const reader = new FileReader();
             reader.onload = (e) => {
                 try {
                     const data = JSON.parse(e.target.result);
                     loadData(data);
                 } catch (err) {
-                    showError("Format de fichier invalide. Assurez-vous qu'il s'agit d'un fichier JSON/mktcat valide.");
+                    showError(t('invalidFileError'));
                 }
             };
-            reader.onerror = () => showError("Erreur lors de la lecture du fichier.");
+            reader.onerror = () => showError(t('fileReadError'));
             reader.readAsText(file);
         }
 
         async function fetchData() {
             try {
                 const response = await fetch(JSON_URL);
-                if (!response.ok) {
-                    throw new Error(`Erreur serveur : ${response.status} ${response.statusText}`);
-                }
+                if (!response.ok) throw new Error(`Erreur serveur : ${response.status} ${response.statusText}`);
                 const data = await response.json();
                 loadData(data);
             } catch (error) {
@@ -345,23 +1889,216 @@
             errorDetails.textContent = `Détails : ${message}`;
         }
 
+        // ── Data loading ───────────────────────────────────────────────────────
+
         function loadData(data) {
             errorState.classList.add('hidden');
             loadingState.classList.add('hidden');
             catalogueData = data;
-            items = (catalogueData.MktCatHeader && catalogueData.MktCatHeader.Items) ? catalogueData.MktCatHeader.Items : [];
-            renderList(items);
+            items = (catalogueData.MktCatHeader && catalogueData.MktCatHeader.Items)
+                ? catalogueData.MktCatHeader.Items : [];
+
+            // Feature 6 – Language detection & translations
+            activeLanguage = detectLanguage(data);
+            applyTranslations();
+
+            // Feature 2 – Country identification (reset pendingApiCountry side-effect)
+            detectCountry(data);
+
+            // Feature 3 – Brand panel
+            renderBrandPanel(data);
+
+            applyFilters();
         }
 
-        function handleSearch() {
+        // ── Feature 2: Country detection ───────────────────────────────────────
+
+        function detectCountry(data) {
+            // 1. If loaded from API, use the stored country code directly
+            if (pendingApiCountry !== null) {
+                const country = pendingApiCountry;
+                pendingApiCountry = null;
+                return country.toUpperCase();
+            }
+
+            // 2. Parse country from LanguageCode (last segment after "-")
+            //    e.g. "de-DE" → "DE", "bs-Latn-BA" → "BA", "ar-001" → "001"
+            try {
+                const langCode = data.MktCatHeader.Items[0].LanguageDependentData[0].LanguageCode;
+                if (langCode) {
+                    const parts = langCode.split('-');
+                    return parts[parts.length - 1].toUpperCase();
+                }
+            } catch (e) { /* fall through */ }
+
+            return '—';
+        }
+
+        // ── Feature 3: Brand panel ─────────────────────────────────────────────
+
+        function renderBrandPanel(data) {
+            const brandPanel = document.getElementById('brandPanel');
+            const brandList  = document.getElementById('brandList');
+
+            if (!data.MktCatHeader || !data.MktCatHeader.BrandInfo) {
+                brandPanel.classList.add('hidden');
+                return;
+            }
+
+            // Deduplicate brands by normalised (uppercase) name,
+            // preferring entries that have wallpaper / USP / long text.
+            const brandMap = new Map();
+            data.MktCatHeader.BrandInfo.forEach(b => {
+                const key = b.Brand.toUpperCase();
+                if (!brandMap.has(key)) {
+                    brandMap.set(key, b);
+                } else {
+                    const existing = brandMap.get(key);
+                    const existingHasData = existing.BrandWallPaper || existing.BrandUSP || existing.BrandLongText;
+                    const newHasData = b.BrandWallPaper || b.BrandUSP || b.BrandLongText;
+                    if (!existingHasData && newHasData) brandMap.set(key, b);
+                }
+            });
+
+            hiddenBrands.clear();
+            brandList.innerHTML = '';
+
+            brandMap.forEach((brand, brandKey) => {
+                const logoUri = (brand.BrandWallPaper && brand.BrandWallPaper.length > 0)
+                    ? formatMichelinUrl(brand.BrandWallPaper[0].URI, 80)
+                    : null;
+
+                const item = document.createElement('div');
+                item.className = 'brand-item flex items-center gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg px-3 py-2 transition-colors cursor-default';
+                item.dataset.brandKey = brandKey;
+
+                // Checkbox
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = true;
+                checkbox.className = 'w-4 h-4 cursor-pointer accent-yellow-500 flex-shrink-0';
+                checkbox.addEventListener('change', () => toggleBrand(brandKey, checkbox.checked));
+                item.appendChild(checkbox);
+
+                // Logo or brand name as fallback
+                if (logoUri) {
+                    const img = document.createElement('img');
+                    img.src = logoUri;
+                    img.alt = brand.Brand;
+                    img.className = 'brand-logo-img h-7 w-auto object-contain flex-shrink-0';
+                    img.onload  = () => img.classList.add('loaded');
+                    img.onerror = () => { img.style.display = 'none'; };
+                    item.appendChild(img);
+                }
+
+                // Brand name label
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'text-xs font-bold uppercase text-slate-700 whitespace-nowrap';
+                nameSpan.textContent = brand.Brand.toUpperCase();
+                item.appendChild(nameSpan);
+
+                // "Détails" button (only when there is content to show)
+                if (brand.BrandUSP || brand.BrandLongText) {
+                    const btn = document.createElement('button');
+                    btn.className = 'ml-1 text-xs text-blue-600 hover:text-blue-800 font-medium border border-blue-200 rounded px-2 py-0.5 hover:bg-blue-50 transition-colors whitespace-nowrap flex-shrink-0';
+                    btn.textContent = t('brandDetailsBtn');
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        toggleBrandPopover(item, brand);
+                    });
+                    item.appendChild(btn);
+                }
+
+                brandList.appendChild(item);
+            });
+
+            brandPanel.classList.remove('hidden');
+        }
+
+        function toggleBrand(brandKey, isChecked) {
+            if (isChecked) {
+                hiddenBrands.delete(brandKey);
+            } else {
+                hiddenBrands.add(brandKey);
+            }
+            applyFilters();
+        }
+
+        function toggleBrandPopover(parentItem, brand) {
+            // If this item already has an open popover, close it and return
+            const existing = parentItem.querySelector('.brand-popover');
+            if (existing) {
+                existing.remove();
+                activeBrandPopover = null;
+                return;
+            }
+
+            // Close any other open popover
+            if (activeBrandPopover) {
+                const prev = activeBrandPopover.querySelector('.brand-popover');
+                if (prev) prev.remove();
+                activeBrandPopover = null;
+            }
+
+            // Build popover
+            const popover = document.createElement('div');
+            popover.className = 'brand-popover bg-white border border-slate-200 shadow-2xl rounded-xl p-4';
+
+            // Logo
+            const logoUri = (brand.BrandWallPaper && brand.BrandWallPaper.length > 0)
+                ? formatMichelinUrl(brand.BrandWallPaper[0].URI, 150)
+                : null;
+            if (logoUri) {
+                const img = document.createElement('img');
+                img.src = logoUri;
+                img.alt = brand.Brand;
+                img.className = 'brand-logo-img h-12 w-auto object-contain mb-3';
+                img.onload  = () => img.classList.add('loaded');
+                img.onerror = () => { img.style.display = 'none'; };
+                popover.appendChild(img);
+            }
+
+            // USP
+            if (brand.BrandUSP) {
+                const usp = document.createElement('p');
+                usp.className = 'text-blue-700 italic font-semibold text-sm mb-3 leading-snug';
+                usp.textContent = brand.BrandUSP;
+                popover.appendChild(usp);
+            }
+
+            // Long text (Markdown)
+            if (brand.BrandLongText) {
+                const longDiv = document.createElement('div');
+                longDiv.className = 'markdown-content text-slate-600 text-sm';
+                longDiv.innerHTML = renderMarkdown(brand.BrandLongText);
+                popover.appendChild(longDiv);
+            }
+
+            parentItem.appendChild(popover);
+            activeBrandPopover = parentItem;
+        }
+
+        // ── Filtering ──────────────────────────────────────────────────────────
+
+        function applyFilters() {
             if (!items.length) return;
             const query = searchBox.value.toLowerCase().trim();
-            const filtered = items.filter(item =>
-                (item.Brand && item.Brand.toLowerCase().includes(query)) ||
-                (item.TreadDesign1 && item.TreadDesign1.toLowerCase().includes(query))
-            );
+            const filtered = items.filter(item => {
+                // Brand checkbox filter
+                const brandKey = item.Brand ? item.Brand.toUpperCase() : '';
+                if (hiddenBrands.has(brandKey)) return false;
+
+                // Text search filter (gamme / TreadDesign1 only — brand filtering is via checkboxes)
+                if (query) {
+                    const matchesTread = item.TreadDesign1 && item.TreadDesign1.toLowerCase().includes(query);
+                    if (!matchesTread) return false;
+                }
+                return true;
+            });
             renderList(filtered);
         }
+
+        // ── Rendering ──────────────────────────────────────────────────────────
 
         function renderList(data) {
             resultsGrid.innerHTML = '';
@@ -372,21 +2109,25 @@
             noResults.classList.add('hidden');
 
             data.forEach((item) => {
-                const frData = item.LanguageDependentData.find(d => d.LanguageCode === 'fr') || item.LanguageDependentData[0] || {};
+                const langData = item.LanguageDependentData.find(d => d.LanguageCode === activeLanguage)
+                    || item.LanguageDependentData.find(d => d.LanguageCode === 'fr')
+                    || item.LanguageDependentData[0] || {};
                 const card = document.createElement('div');
                 card.className = "bg-white rounded-xl shadow-sm hover:shadow-md border border-slate-200 overflow-hidden cursor-pointer transition-all duration-200 transform hover:-translate-y-1";
                 card.onclick = () => showDetail(item);
 
                 const rawImg = item.Image && item.Image.length > 0 ? item.Image[0].URI : null;
-                const mainImg = rawImg ? formatMichelinUrl(rawImg, 300) : 'https://url.de.m.mimecastprotect.com/s/s9qaCPjn3JiojVAP7f0hJIximru?domain=placehold.co';
+                const mainImg = rawImg ? formatMichelinUrl(rawImg, 300) : 'https://placehold.co/300x300?text=No+Image';
 
-                const cardDiv = document.createElement('div');
-                cardDiv.className = 'p-5';
-                
+                const brandLogoUrl = getBrandLogoUrl(item.Brand, 80);
+                const brandHtml = brandLogoUrl
+                    ? `<img src="${brandLogoUrl}" alt="${item.Brand || ''}" class="h-8 w-auto object-contain brand-logo-img" onload="handleImgLoad(this)">`
+                    : `<span class="text-xs font-bold px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full uppercase">${item.Brand || 'Marque'}</span>`;
+
                 card.innerHTML = `
                     <div class="h-48 bg-slate-100 flex items-center justify-center p-4">
-                        <img src="${mainImg}" 
-                             alt="${item.TreadDesign1}" 
+                        <img src="${mainImg}"
+                             alt="${item.TreadDesign1}"
                              loading="lazy"
                              onload="handleImgLoad(this)"
                              onerror="handleImgError(this)"
@@ -394,43 +2135,49 @@
                     </div>
                     <div class="p-5">
                         <div class="flex items-center gap-2 mb-1">
-                            <span class="text-xs font-bold px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full uppercase">${item.Brand || 'Marque'}</span>
+                            ${brandHtml}
                         </div>
                         <h3 class="text-xl font-bold text-slate-800">${item.TreadDesign1 || 'Modèle inconnu'}</h3>
                         <div class="markdown-content text-slate-500 text-sm mt-2 line-clamp-3"></div>
                         <div class="mt-4 flex items-center text-blue-600 font-semibold text-sm">
-                            Voir détails <i class="fas fa-arrow-right ml-2 text-xs"></i>
+                            ${t('seeDetails')} <i class="fas fa-arrow-right ml-2 text-xs"></i>
                         </div>
                     </div>
                 `;
-                
-                // Insert markdown content
+
                 const shortTextDiv = card.querySelector('.markdown-content');
-                if (shortTextDiv) {
-                    shortTextDiv.innerHTML = renderMarkdown(frData.ShortText || '');
-                }
-                
+                if (shortTextDiv) shortTextDiv.innerHTML = renderMarkdown(langData.ShortText || '');
+
                 resultsGrid.appendChild(card);
             });
         }
 
-        function showDetail(item) {
-            const frData = item.LanguageDependentData.find(d => d.LanguageCode === 'fr') || item.LanguageDependentData[0] || {};
+        // ── Detail modal ───────────────────────────────────────────────────────
 
-            document.getElementById('modalBrand').textContent = item.Brand || 'Marque';
+        function showDetail(item) {
+            const langData = item.LanguageDependentData.find(d => d.LanguageCode === activeLanguage)
+                || item.LanguageDependentData.find(d => d.LanguageCode === 'fr')
+                || item.LanguageDependentData[0] || {};
+
             document.getElementById('modalTitle').textContent = item.TreadDesign1 || 'Modèle';
-            
-            // Render markdown for UniqueSellingPoint
+
+            const brandEl = document.getElementById('modalBrand');
+            const modalBrandLogo = getBrandLogoUrl(item.Brand, 120);
+            if (modalBrandLogo) {
+                brandEl.innerHTML = `<img src="${modalBrandLogo}" alt="${item.Brand || ''}" class="h-10 w-auto object-contain brand-logo-img" onload="handleImgLoad(this)">`;
+            } else {
+                brandEl.innerHTML = `<span class="text-sm font-bold uppercase tracking-widest text-blue-600">${item.Brand || 'Marque'}</span>`;
+            }
+
             const uspDiv = document.getElementById('modalUSP');
-            uspDiv.innerHTML = renderMarkdown(frData.UniqueSellingPoint || 'N/A');
+            uspDiv.innerHTML = renderMarkdown(langData.UniqueSellingPoint || 'N/A');
             uspDiv.classList.add('markdown-content');
-            
-            // Render markdown for ShortText
+
             const shortTextDiv = document.getElementById('modalShortText');
-            shortTextDiv.innerHTML = renderMarkdown(frData.ShortText || '');
+            shortTextDiv.innerHTML = renderMarkdown(langData.ShortText || '');
             shortTextDiv.classList.add('markdown-content');
 
-            const longText = frData.LongText;
+            const longText = langData.LongText;
             const longTextDiv = document.getElementById('modalLongText');
             if (longText) {
                 longTextDiv.innerHTML = renderMarkdown(longText);
@@ -441,9 +2188,9 @@
             }
 
             const track = document.getElementById('carouselTrack');
-            const dots = document.getElementById('carouselDots');
+            const dots  = document.getElementById('carouselDots');
             track.innerHTML = '';
-            dots.innerHTML = '';
+            dots.innerHTML  = '';
             currentCarouselIndex = 0;
             currentImagesCount = item.Image ? item.Image.length : 0;
 
@@ -452,10 +2199,7 @@
                     const formattedUri = formatMichelinUrl(img.URI, 600);
                     const slide = document.createElement('div');
                     slide.className = 'carousel-item';
-                    slide.innerHTML = `<img src="${formattedUri}" 
-                                            alt="Image ${i}" 
-                                            onload="handleImgLoad(this)"
-                                            onerror="handleImgError(this)">`;
+                    slide.innerHTML = `<img src="${formattedUri}" alt="Image ${i}" onload="handleImgLoad(this)" onerror="handleImgError(this)">`;
                     track.appendChild(slide);
 
                     const dot = document.createElement('button');
@@ -464,47 +2208,104 @@
                     dots.appendChild(dot);
                 });
             } else {
-                track.innerHTML = `<div class="carousel-item"><img src="https://url.de.m.mimecastprotect.com/s/udoBCQko9LU32Z4Y5CMiLIG55im?domain=placehold.co'images" class="loaded"></div>`;
+                track.innerHTML = `<div class="carousel-item"><img src="https://placehold.co/600x400?text=No+Image" class="loaded"></div>`;
             }
 
             updateCarouselPosition();
 
+            // ── Feature 8: Technology section ───────────────────────────────
+            const techSection   = document.getElementById('technologySection');
+            const techContainer = document.getElementById('technologyContainer');
+            techContainer.innerHTML = '';
+            const techLabels = langData.TechnologyLabel || [];
+            if (techLabels.length > 0) {
+                const sorted = [...techLabels].sort((a, b) => {
+                    const aO = a.SortOrder != null ? parseInt(a.SortOrder, 10) : 9999;
+                    const bO = b.SortOrder != null ? parseInt(b.SortOrder, 10) : 9999;
+                    return aO - bO;
+                });
+                sorted.forEach(tech => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-slate-50 border border-slate-200 rounded-lg p-4 flex flex-row gap-4 items-start';
+                    if (tech.URI) {
+                        const img = document.createElement('img');
+                        img.src     = formatMichelinUrl(tech.URI, 80);
+                        img.alt     = tech.Description || t('technologyLabel');
+                        img.className = 'w-16 h-16 object-contain flex-shrink-0 rounded';
+                        img.onload  = () => handleImgLoad(img);
+                        img.onerror = () => { img.style.display = 'none'; };
+                        card.appendChild(img);
+                    }
+                    const content = document.createElement('div');
+                    content.className = 'flex-1 min-w-0';
+                    if (tech.Description) {
+                        const title = document.createElement('h4');
+                        title.className = 'font-bold text-slate-800 text-base mb-1 markdown-content';
+                        title.innerHTML = renderMarkdown(tech.Description);
+                        content.appendChild(title);
+                    }
+                    if (tech.FootNotes) {
+                        const notes = document.createElement('div');
+                        notes.className = 'markdown-content text-slate-600 text-sm';
+                        notes.innerHTML = renderMarkdown(tech.FootNotes);
+                        content.appendChild(notes);
+                    }
+                    card.appendChild(content);
+                    techContainer.appendChild(card);
+                });
+                techSection.classList.remove('hidden');
+            } else {
+                techSection.classList.add('hidden');
+            }
+
+            // ── Feature 7: Test results with award images ────────────────────
             const testsContainer = document.getElementById('testLabelsContainer');
             testsContainer.innerHTML = '';
-            if (frData.TestLabels && frData.TestLabels.length > 0) {
-                frData.TestLabels.forEach(test => {
-                    const date = test.DateIssue ? new Date(test.DateIssue).toLocaleDateString('fr-FR', {
-                        year: 'numeric', month: 'long', day: 'numeric'
-                    }) : 'Date inconnue';
+            if (langData.TestLabels && langData.TestLabels.length > 0) {
+                langData.TestLabels.forEach(test => {
+                    const date = test.DateIssue
+                        ? new Date(test.DateIssue).toLocaleDateString(activeLanguage, { year: 'numeric', month: 'long', day: 'numeric' })
+                        : t('unknownDate');
 
+                    // Layout: [left: metadata + result badge]  [right: award image]
                     const testCard = document.createElement('div');
-                    testCard.className = "bg-slate-50 border border-slate-200 rounded-lg p-4 flex flex-col md:flex-row md:items-center justify-between gap-4";
-                    testCard.innerHTML = `
-                        <div class="flex-1">
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="bg-yellow-100 text-yellow-800 text-[10px] font-black px-2 py-0.5 rounded uppercase">Test Officiel</span>
-                                <span class="text-xs text-slate-400 font-medium">${date}</span>
-                            </div>
-                            <h4 class="font-bold text-slate-800 text-lg">${test.NameTestingInstance}</h4>
-                            <div class="markdown-content text-slate-500 italic text-sm mt-1"></div>
+                    testCard.className = 'bg-slate-50 border border-slate-200 rounded-lg p-4 flex flex-row items-center gap-4';
+
+                    // Left: metadata + result badge
+                    const meta = document.createElement('div');
+                    meta.className = 'flex-1 min-w-0';
+                    meta.innerHTML = `
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="bg-yellow-100 text-yellow-800 text-[10px] font-black px-2 py-0.5 rounded uppercase">${t('testOfficielLabel')}</span>
+                            <span class="text-xs text-slate-400 font-medium">${date}</span>
                         </div>
-                        <div class="flex items-center">
-                            <span class="bg-green-600 text-white px-4 py-2 rounded-full font-bold text-sm shadow-sm whitespace-nowrap">
-                                <i class="fas fa-check-circle mr-1"></i> ${test.TestResult}
-                            </span>
-                        </div>
+                        <h4 class="font-bold text-slate-800 text-lg">${test.NameTestingInstance}</h4>
+                        <div class="markdown-content text-slate-500 italic text-sm mt-1 mb-3"></div>
+                        <span class="bg-green-600 text-white px-3 py-1.5 rounded-full font-bold text-sm shadow-sm inline-flex items-center gap-1 whitespace-nowrap">
+                            <i class="fas fa-check-circle"></i> ${test.TestResult}
+                        </span>
                     `;
-                    
-                    // Render markdown for TestResultQuotation
-                    const quotationDiv = testCard.querySelector('.markdown-content');
+                    const quotationDiv = meta.querySelector('.markdown-content');
                     if (quotationDiv && test.TestResultQuotation) {
-                        quotationDiv.innerHTML = '"' + renderMarkdown(test.TestResultQuotation) + '"';
+                        quotationDiv.innerHTML = '\u201c' + renderMarkdown(test.TestResultQuotation) + '\u201d';
                     }
-                    
+                    testCard.appendChild(meta);
+
+                    // Right: award image — only when URI is present
+                    if (test.URI) {
+                        const awardImg = document.createElement('img');
+                        awardImg.src       = formatMichelinUrl(test.URI, 120);
+                        awardImg.alt       = test.NameTestingInstance;
+                        awardImg.className = 'w-[120px] h-[120px] object-contain flex-shrink-0';
+                        awardImg.onload    = () => handleImgLoad(awardImg);
+                        awardImg.onerror   = () => { awardImg.style.display = 'none'; };
+                        testCard.appendChild(awardImg);
+                    }
+
                     testsContainer.appendChild(testCard);
                 });
             } else {
-                testsContainer.innerHTML = '<p class="text-slate-400 italic">Aucun label de test disponible.</p>';
+                testsContainer.innerHTML = `<p class="text-slate-400 italic">${t('noTestLabel')}</p>`;
             }
 
             detailModal.classList.remove('hidden');
@@ -530,7 +2331,6 @@
         function updateCarouselPosition() {
             const track = document.getElementById('carouselTrack');
             if (track) track.style.transform = `translateX(-${currentCarouselIndex * 100}%)`;
-
             const dots = document.getElementById('carouselDots').children;
             Array.from(dots).forEach((dot, i) => {
                 if (i === currentCarouselIndex) {
@@ -543,8 +2343,171 @@
             });
         }
 
+        // ── API Modal ──────────────────────────────────────────────────────────
+
+        function openApiModal() {
+            populateApiLanguages();
+            if (lastApiModalState) {
+                // Restore last used selections
+                const langSelect = document.getElementById('apiLanguageSelect');
+                if (langSelect) {
+                    langSelect.value = lastApiModalState.language;
+                    updateApiCountryOptions();
+                    const countrySelect = document.getElementById('apiCountrySelect');
+                    if (countrySelect) countrySelect.value = lastApiModalState.country;
+                }
+                document.getElementById('apiTreadDesign').value  = lastApiModalState.treadDesign;
+                document.getElementById('apiBrandInput').value   = lastApiModalState.brand;
+                document.getElementById('apiKeyInput').value     = lastApiModalState.apiKey;
+                document.getElementById('apiUsernameInput').value = lastApiModalState.username;
+                document.getElementById('apiPasswordInput').value = lastApiModalState.password;
+            } else {
+                document.getElementById('apiTreadDesign').value  = '';
+                document.getElementById('apiBrandInput').value   = '';
+                document.getElementById('apiKeyInput').value     = '';
+                document.getElementById('apiUsernameInput').value = '';
+                document.getElementById('apiPasswordInput').value = '';
+            }
+            document.getElementById('apiModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeApiModal() {
+            // Persist current selections so re-opening restores them
+            const langSelect    = document.getElementById('apiLanguageSelect');
+            const countrySelect = document.getElementById('apiCountrySelect');
+            if (langSelect && countrySelect) {
+                lastApiModalState = {
+                    language:    langSelect.value,
+                    country:     countrySelect.value,
+                    treadDesign: document.getElementById('apiTreadDesign').value,
+                    brand:       document.getElementById('apiBrandInput').value,
+                    apiKey:      document.getElementById('apiKeyInput').value,
+                    username:    document.getElementById('apiUsernameInput').value,
+                    password:    document.getElementById('apiPasswordInput').value
+                };
+            }
+            document.getElementById('apiModal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function togglePasswordVisibility() {
+            const input = document.getElementById('apiPasswordInput');
+            const icon  = document.getElementById('passwordEyeIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+
+        /** Populate the language <select> with unique languages sorted by English name. */
+        function populateApiLanguages() {
+            const langSelect = document.getElementById('apiLanguageSelect');
+            if (!langSelect) return;
+
+            const seen = new Set();
+            const langs = [];
+            LOCALE_COMBINATIONS.forEach(lc => {
+                if (!seen.has(lc.language)) {
+                    seen.add(lc.language);
+                    langs.push({ language: lc.language, languageEN: lc.languageEN });
+                }
+            });
+            langs.sort((a, b) => a.languageEN.localeCompare(b.languageEN));
+
+            langSelect.innerHTML = '';
+            langs.forEach(l => {
+                const opt = document.createElement('option');
+                opt.value = l.language;
+                opt.textContent = `${l.languageEN} (${l.language})`;
+                langSelect.appendChild(opt);
+            });
+
+            updateApiCountryOptions();
+        }
+
+        /** Refresh the country <select> to only show countries valid for the selected language. */
+        function updateApiCountryOptions() {
+            const langSelect    = document.getElementById('apiLanguageSelect');
+            const countrySelect = document.getElementById('apiCountrySelect');
+            if (!langSelect || !countrySelect) return;
+
+            const selectedLang = langSelect.value;
+            const countries = LOCALE_COMBINATIONS
+                .filter(lc => lc.language === selectedLang)
+                .sort((a, b) => a.countryEN.localeCompare(b.countryEN));
+
+            countrySelect.innerHTML = '';
+            countries.forEach(lc => {
+                const opt = document.createElement('option');
+                opt.value = lc.country;
+                opt.textContent = `${lc.countryEN} (${lc.country})`;
+                countrySelect.appendChild(opt);
+            });
+        }
+
+        /** Fetch catalogues from the remote API using the selected parameters. */
+        async function fetchFromApi() {
+            const lang        = document.getElementById('apiLanguageSelect').value;
+            const country     = document.getElementById('apiCountrySelect').value;
+            const treadDesign = document.getElementById('apiTreadDesign').value.trim().replaceAll(" ", "_");
+            const brand       = document.getElementById('apiBrandInput').value.trim();
+            const apiKey      = document.getElementById('apiKeyInput').value.trim();
+            const username    = document.getElementById('apiUsernameInput').value.trim();
+            const password    = document.getElementById('apiPasswordInput').value;
+
+            if (!lang || !country || !apiKey || !username || !password) return;
+
+            closeApiModal();
+
+            resultsGrid.innerHTML = '';
+            loadingState.classList.remove('hidden');
+            errorState.classList.add('hidden');
+            document.getElementById('brandPanel').classList.add('hidden');
+
+            let url = `${API_URL}?language=${encodeURIComponent(lang)}&country=${encodeURIComponent(country)}`;
+            if (treadDesign) url += `&treadDesign=${encodeURIComponent(treadDesign)}`;
+            if (brand)       url += `&brand=${encodeURIComponent(brand)}`;
+
+            const headers = {
+                'apikey':        apiKey,
+                'Authorization': 'Basic ' + btoa(`${username}:${password}`)
+            };
+
+            try {
+                const response = await fetch(url, { headers });
+                if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+                const data = await response.json();
+                // Store language & country so detectLanguage/detectCountry can use them
+                pendingApiLanguage = lang;
+                pendingApiCountry  = country;
+                loadData(data);
+            } catch (err) {
+                showError(err.message);
+            }
+        }
+
+        // ── Global event listeners ─────────────────────────────────────────────
+
         detailModal.addEventListener('click', (e) => {
             if (e.target === detailModal) closeModal();
+        });
+
+        document.getElementById('apiModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('apiModal')) closeApiModal();
+        });
+
+        // Close brand popover when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!activeBrandPopover) return;
+            if (!activeBrandPopover.contains(e.target)) {
+                const popover = activeBrandPopover.querySelector('.brand-popover');
+                if (popover) popover.remove();
+                activeBrandPopover = null;
+            }
         });
 
         window.onload = init;
